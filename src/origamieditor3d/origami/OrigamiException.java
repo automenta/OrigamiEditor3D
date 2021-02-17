@@ -21,7 +21,7 @@ public class OrigamiException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	
-	public OrigamiException(String ex) {
+	private OrigamiException(String ex) {
         super(ex);
     }
     final static public OrigamiException H001 = new OrigamiException(Dictionary.getString("h001"));

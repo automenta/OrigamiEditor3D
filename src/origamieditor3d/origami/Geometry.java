@@ -5,23 +5,23 @@ import java.util.List;
 
 public class Geometry {
 
-    final static public double[] nullvector = new double[]{0, 0, 0};
+    final static public double[] nullvector = {0, 0, 0};
 
     static public boolean plane_between_points(double[] ppoint, double[] pnormal, double[] A, double[] B) {
 
         double konst = ppoint[0] * pnormal[0] + ppoint[1] * pnormal[1] + ppoint[2] * pnormal[2];
         boolean inner = false, outer = false;
 
-        if ((A[0] * pnormal[0] + A[1] * pnormal[1] + A[2] * pnormal[2] - konst) / Math.sqrt(Math.max(Geometry.scalar_product(pnormal, pnormal), 1)) > 0.00000001) {
+        if ((A[0] * pnormal[0] + A[1] * pnormal[1] + A[2] * pnormal[2] - konst) / Math.sqrt(Math.max(scalar_product(pnormal, pnormal), 1)) > 0.00000001) {
             inner = true;
         }
-        if ((A[0] * pnormal[0] + A[1] * pnormal[1] + A[2] * pnormal[2] - konst) / Math.sqrt(Math.max(Geometry.scalar_product(pnormal, pnormal), 1)) < -0.00000001) {
+        if ((A[0] * pnormal[0] + A[1] * pnormal[1] + A[2] * pnormal[2] - konst) / Math.sqrt(Math.max(scalar_product(pnormal, pnormal), 1)) < -0.00000001) {
             outer = true;
         }
-        if ((B[0] * pnormal[0] + B[1] * pnormal[1] + B[2] * pnormal[2] - konst) / Math.sqrt(Math.max(Geometry.scalar_product(pnormal, pnormal), 1)) > 0.00000001) {
+        if ((B[0] * pnormal[0] + B[1] * pnormal[1] + B[2] * pnormal[2] - konst) / Math.sqrt(Math.max(scalar_product(pnormal, pnormal), 1)) > 0.00000001) {
             inner = true;
         }
-        if ((B[0] * pnormal[0] + B[1] * pnormal[1] + B[2] * pnormal[2] - konst) / Math.sqrt(Math.max(Geometry.scalar_product(pnormal, pnormal), 1)) < -0.00000001) {
+        if ((B[0] * pnormal[0] + B[1] * pnormal[1] + B[2] * pnormal[2] - konst) / Math.sqrt(Math.max(scalar_product(pnormal, pnormal), 1)) < -0.00000001) {
             outer = true;
         }
 
@@ -31,7 +31,7 @@ public class Geometry {
     static public boolean point_on_plane(double[] ppoint, double[] pnormal, double[] A) {
 
         double konst = ppoint[0] * pnormal[0] + ppoint[1] * pnormal[1] + ppoint[2] * pnormal[2];
-        return (Math.abs(A[0] * pnormal[0] + A[1] * pnormal[1] + A[2] * pnormal[2] - konst) / Math.sqrt(Math.max(Geometry.scalar_product(pnormal, pnormal), 1)) < 1);
+        return (Math.abs(A[0] * pnormal[0] + A[1] * pnormal[1] + A[2] * pnormal[2] - konst) / Math.sqrt(Math.max(scalar_product(pnormal, pnormal), 1)) < 1);
     }
 
     static public double[] vector_product(double[] v1, double[] v2) {
@@ -70,8 +70,7 @@ public class Geometry {
 
     static public double vector_length(double[] v) {
 
-        double length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-        return length;
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     }
 
     static public double[] length_to_1(double[] v) {
@@ -86,7 +85,7 @@ public class Geometry {
         return new double[]{v[0] / length, v[1] / length, v[2] / length};
     }
 
-    static public double angle(double[] v1, double[] v2) {
+    private static double angle(double[] v1, double[] v2) {
 
         if (vector_length(v1) > 0 && vector_length(v2) > 0) {
 
@@ -157,13 +156,11 @@ public class Geometry {
                 + Y * (Cz * Cy * (1 - cosphi) + Cx * sinphi)
                 + Z * (cosphi + Cz * Cz * (1 - cosphi));
 
-        double[] img = new double[]{
+        return new double[]{
             imgX + lpoint[0],
             imgY + lpoint[1],
             imgZ + lpoint[2]
         };
-
-        return img;
     }
 
     /**
@@ -181,18 +178,18 @@ public class Geometry {
         ArrayList<double[]> ordered = new ArrayList<>();
         ArrayList<Double> angles = new ArrayList<>();
         
-        if (polygon.size() > 0) {
+        if (!polygon.isEmpty()) {
     
             double[] center = { 0, 0 };
     
             for (double[] vert : polygon) {
                 center = new double[] { center[0] + vert[0]/polygon.size(), center[1] + vert[1]/polygon.size()};
             }
-            
-            for (int i = 0; i < polygon.size(); i++) {
-    
-                angles.add(angle(vector(polygon.get(i), center),
-                        new double[] { 1, 0, 0 }));
+
+            for (double[] doubles : polygon) {
+
+                angles.add(angle(vector(doubles, center),
+                        new double[]{1, 0, 0}));
             }
 
             while (ordered.size() < polygon.size()) {
@@ -203,7 +200,7 @@ public class Geometry {
     
                 for (int i = 0; i < angles.size(); i++) {
 
-                    boolean smaller = (angles.get(i) != null) ? (minangle != null ? angles.get(i) < minangle : true) : false;
+                    boolean smaller = angles.get(i) != null && (minangle == null || angles.get(i) < minangle);
                     if (smaller) {
     
                         minangle = angles.get(i);
@@ -244,11 +241,9 @@ public class Geometry {
                     return false;
                 }
             }
-    
-            if (angle(vector(polygon.get(polygon.size() - 2), polygon.get(polygon.size() - 1)),
-                    vector(polygon.get(0), polygon.get(polygon.size() - 1))) > Math.PI) {
-                return false;
-            }
+
+            return !(angle(vector(polygon.get(polygon.size() - 2), polygon.get(polygon.size() - 1)),
+                    vector(polygon.get(0), polygon.get(polygon.size() - 1))) > Math.PI);
         }
         return true;
     }
@@ -276,7 +271,7 @@ public class Geometry {
         else {
             double dist1 = vector_length(vector(point, s1));
             double dist2 = vector_length(vector(point, s2));
-            return dist1 < dist2 ? dist1 : dist2;
+            return Math.min(dist1, dist2);
         }
     }
     

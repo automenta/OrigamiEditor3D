@@ -32,7 +32,7 @@ public class OrigamiGen2 extends Origami {
         super(corners);
     }
 
-    public OrigamiGen2(Origami origami) {
+    private OrigamiGen2(Origami origami) {
         super(origami);
     }
 
@@ -98,14 +98,13 @@ public class OrigamiGen2 extends Origami {
                                     Geometry.vector(meet, vertices.get(polygons.get(polygonIndex).get(j))));
                             double weight2 = Geometry.vector_length(
                                     Geometry.vector(meet, vertices.get(polygons.get(polygonIndex).get(i))));
-                            add2dVertex(new double[] {
-                                    (vertices2d.get(polygons.get(polygonIndex).get(i))[0] * weight1
-                                            + vertices2d.get(polygons.get(polygonIndex).get(j))[0] * weight2)
-                                            / (weight1 + weight2),
+                            add2dVertex((vertices2d.get(polygons.get(polygonIndex).get(i))[0] * weight1
+                                    + vertices2d.get(polygons.get(polygonIndex).get(j))[0] * weight2)
+                                    / (weight1 + weight2),
                                     (vertices2d.get(polygons.get(polygonIndex).get(i))[1] * weight1
                                             + vertices2d.get(polygons.get(polygonIndex).get(j))[1] * weight2)
                                             / (weight1 + weight2),
-                                    0 });
+                                    0);
 
                             newpoly1.add(vertices_size - 1);
                             newpoly2.add(vertices_size - 1);
@@ -139,7 +138,6 @@ public class OrigamiGen2 extends Origami {
     @Override
     public OrigamiGen2 copy() {
 
-        OrigamiGen2 copy = new OrigamiGen2(this);
-        return copy;
+        return new OrigamiGen2(this);
     }
 }

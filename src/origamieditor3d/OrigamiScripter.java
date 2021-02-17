@@ -1,6 +1,6 @@
 package origamieditor3d;
 
-public class OrigamiScripter {
+class OrigamiScripter {
     
     private static String vector2d(double... xy) {
         return " [" + xy[0] + " " + xy[1] + "] ";

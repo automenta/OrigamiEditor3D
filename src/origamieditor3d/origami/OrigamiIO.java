@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  *
@@ -24,7 +25,7 @@ import java.util.Arrays;
  */
 public class OrigamiIO {
 
-    static public void write_gen2(Origami origami, String filename, int[] rgb) throws Exception {
+    static public void write_gen2(Origami origami, String filename, int[] rgb) throws Exception, OrigamiException {
 
         if (!(origami instanceof OrigamiGen2)) {
             write_gen1(origami, filename);
@@ -33,7 +34,7 @@ public class OrigamiIO {
         try {
 
             final int rand = new java.util.Random().nextInt(100000) + 100000;
-            File ori = new File(filename + String.valueOf(rand));
+            File ori = new File(filename + rand);
             if (ori.exists()) {
                 ori.delete();
             }
@@ -56,7 +57,7 @@ public class OrigamiIO {
             }
             
             //paper type
-            str.write((int) origami.papertype().toChar());
+            str.write(origami.papertype().toChar());
             //corners
             if (origami.papertype() == Origami.PaperType.Custom) {
 
@@ -99,7 +100,7 @@ public class OrigamiIO {
             str.write(0x46);
 
             str.close();
-            origamieditor3d.compression.LZW.compress(new File(filename + String.valueOf(rand)), new File(filename));
+            origamieditor3d.compression.LZW.compress(ori, new File(filename));
             ori.delete();
 
         } catch (Exception ex) {
@@ -107,7 +108,7 @@ public class OrigamiIO {
         }
     }
 
-    static public void write_gen1(Origami origami, String filename) throws Exception {
+    private static void write_gen1(Origami origami, String filename) throws OrigamiException {
 
         try {
 
@@ -127,7 +128,7 @@ public class OrigamiIO {
             str.write(2);
             str.write(0x63);
             //paper type
-            str.write((int) origami.papertype().toChar());
+            str.write(origami.papertype().toChar());
             //corners
             if (origami.papertype() == Origami.PaperType.Custom) {
 
@@ -171,7 +172,7 @@ public class OrigamiIO {
         }
     }
 
-    static public Origami read_gen2(java.io.ByteArrayInputStream ori, int[] rgb) throws Exception {
+    static public Origami read_gen2(java.io.ByteArrayInputStream ori, int[] rgb) throws OrigamiException {
 
         try {
 
@@ -212,7 +213,7 @@ public class OrigamiIO {
                         str.read();
                     } else {
 
-                        ArrayList<double[]> sarkok = new ArrayList<>(Arrays.asList(new double[][]{}));
+                        ArrayList<double[]> sarkok = new ArrayList<>(Collections.emptyList());
                         int sarokszam = str.read();
 
                         for (int i = 0; i < sarokszam; i++) {
@@ -235,7 +236,7 @@ public class OrigamiIO {
                             Yint += str.read();
                             float Y = Float.intBitsToFloat(Yint);
 
-                            sarkok.add(new double[]{(double) X, (double) Y});
+                            sarkok.add(new double[]{X, Y});
                         }
 
                         origami = new OrigamiGen2(sarkok);
@@ -307,7 +308,7 @@ public class OrigamiIO {
         }
     }
 
-    static public Origami read_gen1(java.io.ByteArrayInputStream ori) throws Exception {
+    private static Origami read_gen1(java.io.ByteArrayInputStream ori) throws OrigamiException {
 
         try {
 
@@ -347,7 +348,7 @@ public class OrigamiIO {
                         str.read();
                     } else {
 
-                        ArrayList<double[]> sarkok = new ArrayList<>(Arrays.asList(new double[][]{}));
+                        ArrayList<double[]> sarkok = new ArrayList<>(Collections.emptyList());
                         int sarokszam = str.read();
 
                         for (int i = 0; i < sarokszam; i++) {
@@ -370,7 +371,7 @@ public class OrigamiIO {
                             Yint += str.read();
                             float Y = Float.intBitsToFloat(Yint);
 
-                            sarkok.add(new double[]{(double) X, (double) Y});
+                            sarkok.add(new double[]{X, Y});
                         }
 
                         origami = new Origami(sarkok);
@@ -408,7 +409,7 @@ public class OrigamiIO {
                         block[++i] = str.read();
                         block[++i] = str.read();
                         block[++i] = str.read();
-                        header = (((((block[0] << 8) + block[1]) << 8) + block[2]) << 8) + block[3];
+                        header = header;
                     }
                     origami.redoAll();
                     str.close();

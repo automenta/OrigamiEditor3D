@@ -14,9 +14,7 @@ package origamieditor3d.origami;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 import origamieditor3d.resources.Dictionary;
 import origamieditor3d.resources.Instructor;
@@ -49,7 +47,7 @@ public class OrigamiScriptTerminal {
         prompt = false;
     }
 
-    public OrigamiScriptTerminal(Access access, String filename) {
+    private OrigamiScriptTerminal(Access access, String filename) {
 
         this(access);
         this.filename = filename;
@@ -63,7 +61,7 @@ public class OrigamiScriptTerminal {
     private Integer version = 1;
     //
     // eltárolt terminál mezők
-    private ArrayList<String> history;
+    private final ArrayList<String> history;
 
     public ArrayList<String> history() {
 
@@ -83,7 +81,7 @@ public class OrigamiScriptTerminal {
     //
     // eltárolt szerkesztési mezők
     public Origami TerminalOrigami;
-    public Camera TerminalCamera;
+    private Camera TerminalCamera;
     private int paper_color;
     public int paper_color() {
         return paper_color;
@@ -101,7 +99,7 @@ public class OrigamiScriptTerminal {
         tracker = null;
         phi = null;
         title = null;
-        corners = new ArrayList<>(Arrays.asList(new double[][]{}));
+        corners = new ArrayList<>(Collections.emptyList());
         papertype = Origami.PaperType.Custom;
     }
 
@@ -133,273 +131,88 @@ public class OrigamiScriptTerminal {
 
     private interface Command {
 
-        abstract void execute(String... args) throws Exception;
+        void execute(String... args) throws Exception;
     }
 
-    final private HashMap<String, Command> Commands = new HashMap<>();
-    final private HashMap<String, Command> Params = new HashMap<>();
+    final private Map<String, Command> Commands = new HashMap<>();
+    final private Map<String, Command> Params = new HashMap<>();
 
     {
-        Params.put("plane", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                plane(args);
-            }
-        });
+        Params.put("plane", args -> plane(args));
 
-        Params.put("planethrough", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                planethrough(args);
-            }
-        });
+        Params.put("planethrough", args -> planethrough(args));
 
-        Params.put("angle-bisector", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                angle_bisector(args);
-            }
-        });
+        Params.put("angle-bisector", args -> angle_bisector(args));
 
-        Params.put("planepoint", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                planepoint(args);
-            }
-        });
+        Params.put("planepoint", args -> planepoint(args));
 
-        Params.put("planenormal", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                planenormal(args);
-            }
-        });
+        Params.put("planenormal", args -> planenormal(args));
 
-        Params.put("target", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                target(args);
-            }
-        });
+        Params.put("target", args -> target(args));
 
-        Params.put("angle", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                angle(args);
-            }
-        });
+        Params.put("angle", args -> angle(args));
 
-        Params.put("paper", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                paper(args);
-            }
-        });
+        Params.put("paper", args -> paper(args));
 
-        Params.put("corner", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                corner(args);
-            }
-        });
+        Params.put("corner", args -> corner(args));
 
-        Params.put("version", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                version(args);
-            }
-        });
+        Params.put("version", args -> version(args));
 
-        Params.put("locale", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                locale(args);
-            }
-        });
+        Params.put("locale", args -> locale(args));
 
-        Params.put("filename", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                filename(args);
-            }
-        });
+        Params.put("filename", args -> filename(args));
 
-        Params.put("title", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                title(args);
-            }
-        });
+        Params.put("title", args -> title(args));
 
-        Params.put("camera", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                camera(args);
-            }
-        });
+        Params.put("camera", args -> camera(args));
 
-        Params.put("color", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                color(args);
-            }
-        });
+        Params.put("color", args -> color(args));
         
-        Params.put("uncolor", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                uncolor(args);
-            }
-        });
+        Params.put("uncolor", args -> uncolor(args));
     }
 
     {
-        Commands.put("new", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                NEW();
-            }
-        });
+        Commands.put("new", args -> NEW());
 
-        Commands.put("rotate", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                ROTATE();
-            }
-        });
+        Commands.put("rotate", args -> ROTATE());
 
-        Commands.put("reflect", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                REFLECT();
-            }
-        });
+        Commands.put("reflect", args -> REFLECT());
 
-        Commands.put("cut", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                CUT();
-            }
-        });
+        Commands.put("cut", args -> CUT());
 
-        Commands.put("undo", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                UNDO();
-            }
-        });
+        Commands.put("undo", args -> UNDO());
 
-        Commands.put("redo", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                REDO();
-            }
-        });
+        Commands.put("redo", args -> REDO());
 
-        Commands.put("diagnostics", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                DIAGNOSTICS();
-            }
-        });
+        Commands.put("diagnostics", args -> DIAGNOSTICS());
 
-        Commands.put("compile", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                COMPILE();
-            }
-        });
+        Commands.put("compile", args -> COMPILE());
 
-        Commands.put("load", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                LOAD();
-            }
-        });
+        Commands.put("load", args -> LOAD());
 
-        Commands.put("open", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                OPEN();
-            }
-        });
+        Commands.put("open", args -> OPEN());
 
-        Commands.put("load-texture", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                LOAD_TEXTURE();
-            }
-        });
+        Commands.put("load-texture", args -> LOAD_TEXTURE());
 
-        Commands.put("unload-texture", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                UNLOAD_TEXTURE();
-            }
-        });
+        Commands.put("unload-texture", args -> UNLOAD_TEXTURE());
 
-        Commands.put("export-ctm", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                EXPORT_CTM();
-            }
-        });
+        Commands.put("export-ctm", args -> EXPORT_CTM());
 
-        Commands.put("export-autopdf", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                EXPORT_AUTOPDF();
-            }
-        });
+        Commands.put("export-autopdf", args -> EXPORT_AUTOPDF());
 
-        Commands.put("export-gif", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                EXPORT_GIF();
-            }
-        });
+        Commands.put("export-gif", args -> EXPORT_GIF());
 
-        Commands.put("export-jar", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                EXPORT_JAR();
-            }
-        });
+        Commands.put("export-jar", args -> EXPORT_JAR());
 
-        Commands.put("export-png", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                EXPORT_PNG();
-            }
-        });
+        Commands.put("export-png", args -> EXPORT_PNG());
 
-        Commands.put("export-revolving-gif", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                EXPORT_REVOLVING_GIF();
-            }
-        });
+        Commands.put("export-revolving-gif", args -> EXPORT_REVOLVING_GIF());
 
-        Commands.put("export-ori", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                EXPORT_ORI();
-            }
-        });
+        Commands.put("export-ori", args -> EXPORT_ORI());
 
-        Commands.put("root", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                ROOT();
-            }
-        });
+        Commands.put("root", args -> ROOT());
 
-        Commands.put("debug", new Command() {
-            @Override
-            public void execute(String... args) throws Exception {
-                DEBUG();
-            }
-        });
+        Commands.put("debug", args -> DEBUG());
     }
 
     /*
@@ -409,103 +222,67 @@ public class OrigamiScriptTerminal {
     private void plane(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                plane1(args);
-                break;
-
+            default -> plane1(args);
         }
     }
 
     private void planethrough(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                planethrough1(args);
-                break;
-
+            default -> planethrough1(args);
         }
     }
 
     private void angle_bisector(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                angle_bisector1(args);
-                break;
-
+            default -> angle_bisector1(args);
         }
     }
 
     private void planepoint(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                planepoint1(args);
-                break;
-
+            default -> planepoint1(args);
         }
     }
 
     private void planenormal(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                planenormal1(args);
-                break;
-
+            default -> planenormal1(args);
         }
     }
 
     private void target(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                target1(args);
-                break;
-
+            default -> target1(args);
         }
     }
 
     private void angle(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                angle1(args);
-                break;
-
+            default -> angle1(args);
         }
     }
 
     private void paper(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                paper1(args);
-                break;
-
+            default -> paper1(args);
         }
     }
 
     private void corner(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                corner1(args);
-                break;
-
+            default -> corner1(args);
         }
     }
 
-    private void plane1(String... args) throws Exception {
+    private void plane1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 2) {
 
@@ -522,8 +299,7 @@ public class OrigamiScriptTerminal {
 
             } else if (pt.length == 2 && nv.length == 3) {
 
-                ppoint = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pt[0]), Double.parseDouble(pt[1])});
+                ppoint = TerminalOrigami.find3dImageOf(Double.parseDouble(pt[0]), Double.parseDouble(pt[1]));
 
                 pnormal = new double[]{Double.parseDouble(nv[0]),
                     Double.parseDouble(nv[1]), Double.parseDouble(nv[2])};
@@ -537,7 +313,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void planethrough1(String... args) throws Exception {
+    private void planethrough1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 3) {
 
@@ -554,9 +330,8 @@ public class OrigamiScriptTerminal {
                     Double.parseDouble(pont1[2])};
             } else if (pont1.length == 2) {
 
-                pt1 = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pont1[0]),
-                    Double.parseDouble(pont1[1])});
+                pt1 = TerminalOrigami.find3dImageOf(Double.parseDouble(pont1[0]),
+                        Double.parseDouble(pont1[1]));
             } else {
                 throw OrigamiException.H007;
             }
@@ -568,9 +343,8 @@ public class OrigamiScriptTerminal {
                     Double.parseDouble(pont2[2])};
             } else if (pont2.length == 2) {
 
-                pt2 = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pont2[0]),
-                    Double.parseDouble(pont2[1])});
+                pt2 = TerminalOrigami.find3dImageOf(Double.parseDouble(pont2[0]),
+                        Double.parseDouble(pont2[1]));
             } else {
                 throw OrigamiException.H007;
             }
@@ -582,15 +356,14 @@ public class OrigamiScriptTerminal {
                     Double.parseDouble(pont3[2])};
             } else if (pont3.length == 2) {
 
-                pt3 = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pont3[0]),
-                    Double.parseDouble(pont3[1])});
+                pt3 = TerminalOrigami.find3dImageOf(Double.parseDouble(pont3[0]),
+                        Double.parseDouble(pont3[1]));
             } else {
                 throw OrigamiException.H007;
             }
 
             if (Geometry.vector_length(Geometry.vector_product(
-                    Geometry.vector(pt2, pt1), Geometry.vector(pt3, pt1))) != 0d) {
+                    Geometry.vector(pt2, pt1), Geometry.vector(pt3, pt1))) != 0.0d) {
 
                 ppoint = pt1;
                 pnormal = Geometry.vector_product(Geometry.vector(pt2, pt1),
@@ -603,7 +376,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void angle_bisector1(String... args) throws Exception {
+    private void angle_bisector1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 3) {
 
@@ -620,9 +393,8 @@ public class OrigamiScriptTerminal {
                     Double.parseDouble(pont1[2])};
             } else if (pont1.length == 2) {
 
-                pt1 = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pont1[0]),
-                    Double.parseDouble(pont1[1])});
+                pt1 = TerminalOrigami.find3dImageOf(Double.parseDouble(pont1[0]),
+                        Double.parseDouble(pont1[1]));
             } else {
                 throw OrigamiException.H007;
             }
@@ -634,9 +406,8 @@ public class OrigamiScriptTerminal {
                     Double.parseDouble(pont2[2])};
             } else if (pont2.length == 2) {
 
-                pt2 = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pont2[0]),
-                    Double.parseDouble(pont2[1])});
+                pt2 = TerminalOrigami.find3dImageOf(Double.parseDouble(pont2[0]),
+                        Double.parseDouble(pont2[1]));
             } else {
                 throw OrigamiException.H007;
             }
@@ -648,9 +419,8 @@ public class OrigamiScriptTerminal {
                     Double.parseDouble(pont3[2])};
             } else if (pont3.length == 2) {
 
-                pt3 = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pont3[0]),
-                    Double.parseDouble(pont3[1])});
+                pt3 = TerminalOrigami.find3dImageOf(Double.parseDouble(pont3[0]),
+                        Double.parseDouble(pont3[1]));
             } else {
                 throw OrigamiException.H007;
             }
@@ -659,7 +429,7 @@ public class OrigamiScriptTerminal {
                     Geometry.length_to_100(Geometry.vector(pt1, pt2)),
                     Geometry.length_to_100(Geometry.vector(pt3, pt2)));
 
-            if (Geometry.vector_length(pnormal) == 0.) {
+            if (Geometry.vector_length(pnormal) == 0.0) {
                 throw OrigamiException.H012;
             }
 
@@ -668,7 +438,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void planepoint1(String... args) throws Exception {
+    private void planepoint1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -681,8 +451,7 @@ public class OrigamiScriptTerminal {
 
             } else if (pt.length == 2) {
 
-                ppoint = TerminalOrigami.find3dImageOf(new double[]{
-                    Double.parseDouble(pt[0]), Double.parseDouble(pt[1])});
+                ppoint = TerminalOrigami.find3dImageOf(Double.parseDouble(pt[0]), Double.parseDouble(pt[1]));
 
             } else {
                 throw OrigamiException.H007;
@@ -693,7 +462,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void planenormal1(String... args) throws Exception {
+    private void planenormal1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -713,7 +482,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void target1(String... args) throws Exception {
+    private void target1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -732,7 +501,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void angle1(String... args) throws Exception {
+    private void angle1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -750,7 +519,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void paper1(String... args) throws Exception {
+    private void paper1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -758,7 +527,7 @@ public class OrigamiScriptTerminal {
 
             if (bajf.length == 4) {
 
-                corners = new ArrayList<>(Arrays.asList(new double[][]{}));
+                corners = new ArrayList<>(Collections.emptyList());
                 corners.add(new double[]{Double.parseDouble(bajf[0]),
                     Double.parseDouble(bajf[1])});
                 corners.add(new double[]{Double.parseDouble(bajf[0]),
@@ -771,24 +540,12 @@ public class OrigamiScriptTerminal {
             } else if (bajf.length == 1) {
 
                 switch (bajf[0]) {
-
-                    case "square":
-                        papertype = Origami.PaperType.Square;
-                        break;
-                    case "a4":
-                        papertype = Origami.PaperType.A4;
-                        break;
-                    case "hexagon":
-                        papertype = Origami.PaperType.Hexagon;
-                        break;
-                    case "usd":
-                        papertype = Origami.PaperType.Dollar;
-                        break;
-                    case "huf":
-                        papertype = Origami.PaperType.Forint;
-                        break;
-                    default:
-                        throw OrigamiException.H009;
+                    case "square" -> papertype = Origami.PaperType.Square;
+                    case "a4" -> papertype = Origami.PaperType.A4;
+                    case "hexagon" -> papertype = Origami.PaperType.Hexagon;
+                    case "usd" -> papertype = Origami.PaperType.Dollar;
+                    case "huf" -> papertype = Origami.PaperType.Forint;
+                    default -> throw OrigamiException.H009;
                 }
             } else {
                 throw OrigamiException.H007;
@@ -799,7 +556,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void corner1(String... args) throws Exception {
+    private void corner1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -825,69 +582,46 @@ public class OrigamiScriptTerminal {
     private void NEW() throws Exception {
 
         switch (version) {
-
-            default:
-                NEW1();
-                break;
+            default -> NEW1();
         }
     }
 
     private void ROTATE() throws Exception {
 
         switch (version) {
-
-            default:
-                ROTATE1();
-                break;
-
+            default -> ROTATE1();
         }
     }
 
     private void REFLECT() throws Exception {
 
         switch (version) {
-
-            default:
-                REFLECT1();
-                break;
-
+            default -> REFLECT1();
         }
     }
 
     private void CUT() throws Exception {
 
         switch (version) {
-
-            default:
-                CUT1();
-                break;
-
+            default -> CUT1();
         }
     }
 
     private void UNDO() throws Exception {
 
         switch (version) {
-
-            default:
-                UNDO1();
-                break;
-
+            default -> UNDO1();
         }
     }
 
     private void REDO() throws Exception {
 
         switch (version) {
-
-            default:
-                REDO1();
-                break;
-
+            default -> REDO1();
         }
     }
 
-    private void NEW1() throws Exception {
+    private void NEW1() throws OrigamiException {
 
         historyReset();
         if (papertype == Origami.PaperType.Custom) {
@@ -897,15 +631,14 @@ public class OrigamiScriptTerminal {
             } catch (Exception ex) {
                 throw OrigamiException.H001;
             }
-            paramReset();
         } else {
 
             TerminalOrigami = new OrigamiGen2(papertype);
-            paramReset();
         }
+        paramReset();
     }
 
-    private void ROTATE1() throws Exception {
+    private void ROTATE1() throws OrigamiException {
 
         if (ppoint != null && pnormal != null && phi != null && tracker == null) {
             TerminalOrigami.rotationFold(ppoint, pnormal, phi);
@@ -925,7 +658,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void REFLECT1() throws Exception {
+    private void REFLECT1() throws OrigamiException {
 
         if (ppoint != null && pnormal != null && tracker == null) {
 
@@ -944,7 +677,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void CUT1() throws Exception {
+    private void CUT1() throws OrigamiException {
 
         if (ppoint != null && pnormal != null && tracker == null) {
 
@@ -965,7 +698,7 @@ public class OrigamiScriptTerminal {
 
     private void UNDO1() throws Exception {
 
-        if (TerminalOrigami.history().size() > 0) {
+        if (!TerminalOrigami.history().isEmpty()) {
             TerminalOrigami.undo();
         } else {
             undo(1);
@@ -973,7 +706,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void REDO1() throws Exception {
+    private void REDO1() {
 
         TerminalOrigami.redo();
         paramReset();
@@ -983,7 +716,7 @@ public class OrigamiScriptTerminal {
      * ///////////////////////////
      * TERMINAL PARAMETERS
      */// /////////////////////////
-    private void version(String... args) throws Exception {
+    private void version(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -998,7 +731,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void locale(String... args) throws Exception {
+    private static void locale(String... args) throws OrigamiException {
 
         if (args.length == 1) {
 
@@ -1016,59 +749,39 @@ public class OrigamiScriptTerminal {
     private void filename(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                filename1(args);
-                break;
-
+            default -> filename1(args);
         }
     }
 
     private void title(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                title1(args);
-                break;
-
+            default -> title1(args);
         }
     }
 
     private void camera(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                camera1(args);
-                break;
-
+            default -> camera1(args);
         }
     }
 
     private void color(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                color1(args);
-                break;
-
+            default -> color1(args);
         }
     }
     
     private void uncolor(String... args) throws Exception {
 
         switch (version) {
-
-            default:
-                uncolor1(args);
-                break;
-
+            default -> uncolor1(args);
         }
     }
 
-    private void filename1(String... args) throws Exception {
+    private void filename1(String... args) throws OrigamiException {
 
         if (args.length == 1) {
 
@@ -1078,7 +791,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void title1(String... args) throws Exception {
+    private void title1(String... args) throws OrigamiException {
 
         if (args.length == 1) {
 
@@ -1088,7 +801,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void camera1(String... args) throws Exception {
+    private void camera1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 3) {
 
@@ -1125,7 +838,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void color1(String... args) throws Exception {
+    private void color1(String... args) throws NumberFormatException, OrigamiException {
 
         if (args.length == 1) {
 
@@ -1146,7 +859,7 @@ public class OrigamiScriptTerminal {
         }
     }
     
-    private void uncolor1(String... args) throws Exception {
+    private void uncolor1(String... args) throws OrigamiException {
 
         if (args.length == 0) {
             paper_color = default_paper_color;
@@ -1162,176 +875,116 @@ public class OrigamiScriptTerminal {
     private void DIAGNOSTICS() throws Exception {
 
         switch (version) {
-
-            default:
-                DIAGNOSTICS1();
-                break;
-
+            default -> DIAGNOSTICS1();
         }
     }
 
     private void COMPILE() throws Exception {
 
         switch (version) {
-
-            default:
-                COMPILE1();
-                break;
-
+            default -> COMPILE1();
         }
     }
 
     private void LOAD() throws Exception {
 
         switch (version) {
-
-            default:
-                LOAD1();
-                break;
-
+            default -> LOAD1();
         }
     }
 
     private void OPEN() throws Exception {
 
         switch (version) {
-
-            default:
-                OPEN1();
-                break;
-
+            default -> OPEN1();
         }
     }
 
     private void LOAD_TEXTURE() throws Exception {
 
         switch (version) {
-
-            default:
-                LOAD_TEXTURE1();
-                break;
-
+            default -> LOAD_TEXTURE1();
         }
     }
 
     private void UNLOAD_TEXTURE() throws Exception {
 
         switch (version) {
-
-            default:
-                UNLOAD_TEXTURE1();
-                break;
-
+            default -> UNLOAD_TEXTURE1();
         }
     }
 
     private void EXPORT_CTM() throws Exception {
 
         switch (version) {
-
-            default:
-                EXPORT_CTM1();
-                break;
-
+            default -> EXPORT_CTM1();
         }
     }
 
     private void EXPORT_AUTOPDF() throws Exception {
 
         switch (version) {
-
-            default:
-                EXPORT_AUTOPDF1();
-                break;
-
+            default -> EXPORT_AUTOPDF1();
         }
     }
 
     private void EXPORT_GIF() throws Exception {
 
         switch (version) {
-
-            default:
-                EXPORT_GIF1();
-                break;
-
+            default -> EXPORT_GIF1();
         }
     }
 
     private void EXPORT_REVOLVING_GIF() throws Exception {
 
         switch (version) {
-
-            default:
-                EXPORT_REVOLVING_GIF1();
-                break;
-
+            default -> EXPORT_REVOLVING_GIF1();
         }
     }
 
     private void EXPORT_JAR() throws Exception {
 
         switch (version) {
-
-            default:
-                EXPORT_JAR1();
-                break;
-
+            default -> EXPORT_JAR1();
         }
     }
 
     private void EXPORT_PNG() throws Exception {
 
         switch (version) {
-
-            default:
-                EXPORT_PNG1();
-                break;
-
+            default -> EXPORT_PNG1();
         }
     }
 
     private void EXPORT_ORI() throws Exception {
 
         switch (version) {
-
-            default:
-                EXPORT_ORI1();
-                break;
-
+            default -> EXPORT_ORI1();
         }
     }
 
     private void ROOT() throws Exception {
 
         switch (version) {
-
-            default:
-                ROOT1();
-                break;
-
+            default -> ROOT1();
         }
     }
 
     private void DEBUG() throws Exception {
 
         switch (version) {
-
-            default:
-                DEBUG1();
-                break;
-
+            default -> DEBUG1();
         }
     }
 
-    private void DIAGNOSTICS1() throws Exception {
+    private void DIAGNOSTICS1() throws OrigamiException {
 
         if (access == Access.DEV) {
 
             System.out.println("TerminalOrigami.vertices_size == "
-                    + Integer.toString(TerminalOrigami.vertices_size()));
+                    + TerminalOrigami.vertices_size());
             System.out.println("TerminalOrigami.polygons_size == "
-                    + Integer.toString(TerminalOrigami.polygons_size()));
+                    + TerminalOrigami.polygons_size());
             for (int i = 0; i < TerminalOrigami.vertices_size(); i++) {
 
                 System.out.print("planar vertex " + i + ": ");
@@ -1355,15 +1008,15 @@ public class OrigamiScriptTerminal {
             System.out.println("TerminalOrigami.corners:");
             for (double[] pont : TerminalOrigami.corners()) {
 
-                System.out.println(Double.toString(pont[0]) + " "
-                        + Double.toString(pont[1]));
+                System.out.println(pont[0] + " "
+                        + pont[1]);
             }
         } else {
             throw OrigamiException.H011;
         }
     }
 
-    private void COMPILE1() throws Exception {
+    private void COMPILE1() throws Exception, java.io.IOException, java.io.FileNotFoundException, OrigamiException {
 
         if (access == Access.ROOT || access == Access.DEV) {
 
@@ -1372,14 +1025,15 @@ public class OrigamiScriptTerminal {
                 try (BufferedReader br = new BufferedReader(new FileReader(
                         filename))) {
 
-                    String bytes = "", line;
+                    StringBuilder bytes = new StringBuilder();
+                    String line;
                     while ((line = br.readLine()) != null) {
-                        bytes += line + " ";
+                        bytes.append(line).append(" ");
                     }
 
                     OrigamiScriptTerminal sandbox = new OrigamiScriptTerminal(
                             OrigamiScriptTerminal.Access.USER, filename);
-                    sandbox.execute(bytes);
+                    sandbox.execute(bytes.toString());
                 }
             } else {
                 throw OrigamiException.H010;
@@ -1391,7 +1045,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void LOAD1() throws Exception {
+    private void LOAD1() throws Exception, java.io.IOException, java.io.FileNotFoundException, OrigamiException {
 
         if (access == Access.ROOT || access == Access.DEV) {
 
@@ -1402,12 +1056,13 @@ public class OrigamiScriptTerminal {
                 try (BufferedReader br = new BufferedReader(new FileReader(
                         filename))) {
 
-                    String bajtok = "", sor;
+                    StringBuilder bajtok = new StringBuilder();
+                    String sor;
                     while ((sor = br.readLine()) != null) {
-                        bajtok += sor + (char) 10;
+                        bajtok.append(sor).append((char) 10);
                     }
 
-                    execute(bajtok, Access.USER);
+                    execute(bajtok.toString(), Access.USER);
                 }
             } else {
                 throw OrigamiException.H010;
@@ -1419,7 +1074,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void OPEN1() throws Exception {
+    private void OPEN1() throws Exception, java.io.FileNotFoundException, java.io.IOException, OrigamiException {
 
         if (access == Access.ROOT || access == Access.DEV) {
 
@@ -1428,7 +1083,7 @@ public class OrigamiScriptTerminal {
             if (filename != null) {
 
                 java.util.ArrayList<Byte> bytesb = new java.util.ArrayList<>();
-                java.io.FileInputStream fis = new java.io.FileInputStream(new java.io.File(filename));
+                java.io.FileInputStream fis = new java.io.FileInputStream(filename);
                 int nxb;
                 while ((nxb = fis.read()) != -1) {
                     bytesb.add((byte) nxb);
@@ -1450,7 +1105,7 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void LOAD_TEXTURE1() throws Exception {
+    private void LOAD_TEXTURE1() throws java.io.IOException, OrigamiException {
 
         if (filename != null) {
 
@@ -1463,11 +1118,11 @@ public class OrigamiScriptTerminal {
         }
     }
 
-    private void UNLOAD_TEXTURE1() throws Exception {
+    private void UNLOAD_TEXTURE1() {
         paper_texture = null;
     }
 
-    private void EXPORT_CTM1() throws Exception {
+    private void EXPORT_CTM1() throws Exception, OrigamiException {
 
         if (filename != null) {
 
@@ -1482,7 +1137,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void EXPORT_AUTOPDF1() throws Exception {
+    private void EXPORT_AUTOPDF1() throws Exception, OrigamiException {
 
         if (filename != null && title != null) {
 
@@ -1497,7 +1152,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void EXPORT_GIF1() throws Exception {
+    private void EXPORT_GIF1() throws Exception, OrigamiException {
 
         if (filename != null) {
 
@@ -1512,7 +1167,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void EXPORT_REVOLVING_GIF1() throws Exception {
+    private void EXPORT_REVOLVING_GIF1() throws Exception, OrigamiException {
 
         if (filename != null) {
 
@@ -1527,7 +1182,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void EXPORT_JAR1() throws Exception {
+    private void EXPORT_JAR1() throws Exception, OrigamiException {
 
         if (filename != null) {
 
@@ -1546,7 +1201,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void EXPORT_PNG1() throws Exception {
+    private void EXPORT_PNG1() throws Exception, OrigamiException {
 
         if (filename != null) {
 
@@ -1561,7 +1216,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void EXPORT_ORI1() throws Exception {
+    private void EXPORT_ORI1() throws Exception, OrigamiException {
 
         if (filename != null) {
 
@@ -1580,7 +1235,7 @@ public class OrigamiScriptTerminal {
         paramReset();
     }
 
-    private void ROOT1() throws Exception {
+    private void ROOT1() {
 
         Object[] options = {Dictionary.getString("yes"), Dictionary.getString("no")};
         prompt = true;
@@ -1592,7 +1247,7 @@ public class OrigamiScriptTerminal {
         this.access = Access.ROOT;
     }
 
-    private void DEBUG1() throws Exception {
+    private void DEBUG1() {
 
         Object[] options = {Dictionary.getString("yes"), Dictionary.getString("no")};
         prompt = true;
@@ -1604,10 +1259,10 @@ public class OrigamiScriptTerminal {
         access = Access.DEV;
     }
 
-    static public String obfuscate(String code) {
+    static public String obfuscate(CharSequence code) {
 
         // 1. lépés: kommentek eltávolítása
-        String result = "";
+        StringBuilder result = new StringBuilder();
         boolean phys = true;
         for (int i = 0; i < code.length(); i++) {
 
@@ -1615,7 +1270,7 @@ public class OrigamiScriptTerminal {
                 phys = false;
             }
             if (phys) {
-                result += code.charAt(i);
+                result.append(code.charAt(i));
             }
             if (code.charAt(i) == '}') {
                 phys = true;
@@ -1623,19 +1278,19 @@ public class OrigamiScriptTerminal {
         }
 
         // 2. lépés: hiányzó szóközök pótlása
-        result = result.replace("[", " [");
-        result = result.replace("]", "] ");
+        result = new StringBuilder(result.toString().replace("[", " ["));
+        result = new StringBuilder(result.toString().replace("]", "] "));
 
         // 3. lépés: tabulátorok és sortörések eltávolítása
-        result = result.replace((char) 9, ' ');
-        result = result.replace((char) 10, ' ');
+        result = new StringBuilder(result.toString().replace((char) 9, ' '));
+        result = new StringBuilder(result.toString().replace((char) 10, ' '));
 
         // 4. lépés: többszörös szóközök összevonása
         int tmp_hossz = -1;
         while (tmp_hossz != result.length()) {
 
             tmp_hossz = result.length();
-            result = result.replace("  ", " ");
+            result = new StringBuilder(result.toString().replace("  ", " "));
         }
 
         // 5. lépés: szögletes zárójelen belüli szóközök cseréje |-ra.
@@ -1646,67 +1301,64 @@ public class OrigamiScriptTerminal {
                 param = false;
             }
             if (param && result.charAt(i) == ' ') {
-                result = result.substring(0, i) + "|" + result.substring(i + 1);
+                result = new StringBuilder(result.substring(0, i) + "|" + result.substring(i + 1));
             }
             if (result.charAt(i) == '[') {
                 param = true;
             }
         }
 
-        return result;
+        return result.toString();
     }
 
     private boolean prompt;
 
     @SuppressWarnings("deprecation")
-    public void execute(String code) throws Exception {
+    public void execute(String code) throws Exception, java.awt.HeadlessException, InterruptedException {
 
         history.add(code);
         code = obfuscate(code);
         final String[] szavak = code.split(" ");
 
         final Exception[] unreportedException = {null};
-        Thread exec = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        Thread exec = new Thread(() -> {
 
-                try {
-                    for (int i = 0; i < szavak.length; i++) {
-                        if (!(szavak[i].contains("[") || szavak[i].contains("]"))) {
-                            if (Commands.containsKey(szavak[i])) {
-                                Commands.get(szavak[i]).execute();
+            try {
+                for (int i = 0; i < szavak.length; i++) {
+                    if (!(szavak[i].contains("[") || szavak[i].contains("]"))) {
+                        if (Commands.containsKey(szavak[i])) {
+                            Commands.get(szavak[i]).execute();
+                        }
+
+                        if (Params.containsKey(szavak[i])) {
+
+                            ArrayList<String> argumentumok = new ArrayList<>();
+                            for (int ii = i + 1; ii < szavak.length; ii++) {
+                                if (Commands.containsKey(szavak[ii])
+                                        || Params.containsKey(szavak[ii])) {
+                                    break;
+                                }
+                                if (!szavak[ii].equals("")) {
+                                    argumentumok.add(szavak[ii].replace("[", "")
+                                            .replace("]", "").replace("|", " "));
+                                }
                             }
 
-                            if (Params.containsKey(szavak[i])) {
-
-                                ArrayList<String> argumentumok = new ArrayList<>();
-                                for (int ii = i + 1; ii < szavak.length; ii++) {
-                                    if (Commands.containsKey(szavak[ii])
-                                            || Params.containsKey(szavak[ii])) {
-                                        break;
-                                    }
-                                    if (!szavak[ii].equals("")) {
-                                        argumentumok.add(szavak[ii].replace("[", "")
-                                                .replace("]", "").replace("|", " "));
-                                    }
-                                }
-
-                                String[] tombarg = new String[argumentumok.size()];
-                                for (int iii = 0; iii < argumentumok.size(); iii++) {
-                                    tombarg[iii] = argumentumok.get(iii);
-                                }
-
-                                Params.get(szavak[i]).execute(tombarg);
+                            String[] tombarg = new String[argumentumok.size()];
+                            for (int iii = 0; iii < argumentumok.size(); iii++) {
+                                tombarg[iii] = argumentumok.get(iii);
                             }
+
+                            Params.get(szavak[i]).execute(tombarg);
                         }
                     }
-                } catch (Exception exc) {
-
-                    history.subList(history.size() - 1, history.size()).clear();
-                    unreportedException[0] = exc;
                 }
+            } catch (Exception exc) {
 
+                history.subList(history.size() - 1, history.size()).clear();
+                unreportedException[0] = exc;
             }
+
         });
 
         long timeout = System.currentTimeMillis() + 10000;
@@ -1752,7 +1404,7 @@ public class OrigamiScriptTerminal {
     @SuppressWarnings("unchecked")
     private void execute() throws Exception {
 
-        ArrayList<String> tmp = (ArrayList<String>) history.clone();
+        Iterable<String> tmp = (ArrayList<String>) history.clone();
         totalReset();
         for (String p : tmp) {
             execute(p);

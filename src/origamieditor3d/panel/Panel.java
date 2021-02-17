@@ -28,13 +28,14 @@ public abstract class Panel extends JPanel {
         Normal, Neusis, Planethrough, Angle_bisector
     }
 
-    protected Origami PanelOrigami;
-    protected Camera PanelCamera;
-    protected RulerMode rulerMode;
+    Origami PanelOrigami;
+    Camera PanelCamera;
+    RulerMode rulerMode;
     
-    protected Integer tracker_x, tracker_y;
-    protected boolean trackerOn;
-    protected boolean ready_to_paint;
+    Integer tracker_x;
+    Integer tracker_y;
+    boolean trackerOn;
+    boolean ready_to_paint;
     
     public abstract void reset();
 

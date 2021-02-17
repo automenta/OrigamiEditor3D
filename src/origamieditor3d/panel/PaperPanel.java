@@ -29,7 +29,7 @@ public class PaperPanel extends Panel {
     
     private boolean trackerOn;
     private double[] liner_point, liner_normal;
-    private Integer[][] liner_triangle;
+    private final Integer[][] liner_triangle;
     private int liner_grab_index;
     
     public Integer tracker_x() {
@@ -104,17 +104,17 @@ public class PaperPanel extends Panel {
         double pont1X = ((double) x1 - refcam.xshift) / refcam.zoom();
         double pont1Y = ((double) y1 - refcam.yshift) / refcam.zoom();
 
-        double[] vonalzoNV = new double[]{
+        double[] vonalzoNV = {
             refcam.axis_x()[0] * (y2 - y1) + refcam.axis_y()[0] * (x1 - x2),
             refcam.axis_x()[1] * (y2 - y1) + refcam.axis_y()[1] * (x1 - x2),
             refcam.axis_x()[2] * (y2 - y1) + refcam.axis_y()[2] * (x1 - x2)
         };
-        double[] vonalzoPT = new double[]{
+        double[] vonalzoPT = {
             refcam.axis_x()[0] / refcam.zoom() * pontX + refcam.axis_y()[0] / refcam.zoom() * pontY + refcam.camera_pos()[0],
             refcam.axis_x()[1] / refcam.zoom() * pontX + refcam.axis_y()[1] / refcam.zoom() * pontY + refcam.camera_pos()[1],
             refcam.axis_x()[2] / refcam.zoom() * pontX + refcam.axis_y()[2] / refcam.zoom() * pontY + refcam.camera_pos()[2]
         };
-        double[] vonalzoPT1 = new double[]{
+        double[] vonalzoPT1 = {
             refcam.axis_x()[0] / refcam.zoom() * pont1X + refcam.axis_y()[0] / refcam.zoom() * pont1Y + refcam.camera_pos()[0],
             refcam.axis_x()[1] / refcam.zoom() * pont1X + refcam.axis_y()[1] / refcam.zoom() * pont1Y + refcam.camera_pos()[1],
             refcam.axis_x()[2] / refcam.zoom() * pont1X + refcam.axis_y()[2] / refcam.zoom() * pont1Y + refcam.camera_pos()[2]
@@ -143,24 +143,18 @@ public class PaperPanel extends Panel {
             try {
 
                 double[] pt1 = PanelOrigami.find3dImageOf(
-                        new double[]{
-                            ((double) liner_triangle[0][0] - PanelCamera.xshift + PanelCamera.projection0(PanelCamera.camera_pos())[0]) / PanelCamera.zoom(),
-                            ((double) liner_triangle[0][1] - PanelCamera.yshift + PanelCamera.projection0(PanelCamera.camera_pos())[1]) / PanelCamera.zoom()
-                        }),
+                        ((double) liner_triangle[0][0] - PanelCamera.xshift + PanelCamera.projection0(PanelCamera.camera_pos())[0]) / PanelCamera.zoom(),
+                        ((double) liner_triangle[0][1] - PanelCamera.yshift + PanelCamera.projection0(PanelCamera.camera_pos())[1]) / PanelCamera.zoom()),
                         pt2 = PanelOrigami.find3dImageOf(
-                                new double[]{
-                                    ((double) liner_triangle[1][0] - PanelCamera.xshift + PanelCamera.projection0(PanelCamera.camera_pos())[0]) / PanelCamera.zoom(),
-                                    ((double) liner_triangle[1][1] - PanelCamera.yshift + PanelCamera.projection0(PanelCamera.camera_pos())[1]) / PanelCamera.zoom()
-                                }),
+                                ((double) liner_triangle[1][0] - PanelCamera.xshift + PanelCamera.projection0(PanelCamera.camera_pos())[0]) / PanelCamera.zoom(),
+                                ((double) liner_triangle[1][1] - PanelCamera.yshift + PanelCamera.projection0(PanelCamera.camera_pos())[1]) / PanelCamera.zoom()),
                         pt3 = PanelOrigami.find3dImageOf(
-                                new double[]{
-                                    ((double) liner_triangle[2][0] - PanelCamera.xshift + PanelCamera.projection0(PanelCamera.camera_pos())[0]) / PanelCamera.zoom(),
-                                    ((double) liner_triangle[2][1] - PanelCamera.yshift + PanelCamera.projection0(PanelCamera.camera_pos())[1]) / PanelCamera.zoom()
-                                });
+                                ((double) liner_triangle[2][0] - PanelCamera.xshift + PanelCamera.projection0(PanelCamera.camera_pos())[0]) / PanelCamera.zoom(),
+                                ((double) liner_triangle[2][1] - PanelCamera.yshift + PanelCamera.projection0(PanelCamera.camera_pos())[1]) / PanelCamera.zoom());
 
                 if (rulerMode == RulerMode.Planethrough) {
                     if (Geometry.vector_length(Geometry.vector_product(
-                            Geometry.vector(pt2, pt1), Geometry.vector(pt3, pt1))) != 0d) {
+                            Geometry.vector(pt2, pt1), Geometry.vector(pt3, pt1))) != 0.0d) {
 
                         liner_point = pt1;
                         liner_normal = Geometry.vector_product(Geometry.vector(pt2, pt1),
@@ -173,11 +167,11 @@ public class PaperPanel extends Panel {
                     liner_normal = Geometry.vector(
                             Geometry.length_to_100(Geometry.vector(pt1, pt2)),
                             Geometry.length_to_100(Geometry.vector(pt3, pt2)));
-                    if (Geometry.vector_length(liner_normal) == 0.) {
+                    if (Geometry.vector_length(liner_normal) == 0.0) {
                         rulerOff();
                     }
                 }
-            } catch (Exception ex) {
+            } catch (RuntimeException ex) {
             }
         }
     }
@@ -210,7 +204,7 @@ public class PaperPanel extends Panel {
         if (ready_to_paint) {
             try {
                 PanelCamera.drawCreasePattern(g, Color.black, PanelOrigami);
-            } catch (Exception ex) {
+            } catch (RuntimeException ex) {
             }
         }
         g.setColor(Color.red);

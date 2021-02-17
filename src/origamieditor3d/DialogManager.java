@@ -8,7 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import origamieditor3d.resources.Dictionary;
 
-public class DialogManager {
+class DialogManager {
 
     final private OrigamiEditorUI associated_ui;
     
@@ -23,24 +23,18 @@ public class DialogManager {
     public boolean canICloseFile() {
         
         Object[] options = { Dictionary.getString("dialog.unsaved.close"), Dictionary.getString("dialog.unsaved.dontclose") };
-        
-        if (JOptionPane.showOptionDialog(associated_ui, Dictionary.getString("dialog.unsaved"),
+
+        return JOptionPane.showOptionDialog(associated_ui, Dictionary.getString("dialog.unsaved"),
                 Dictionary.getString("question"), JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, options, options[1])
-                == JOptionPane.YES_OPTION) {
-            return true;
-        }
-        return false;
+                == JOptionPane.YES_OPTION;
     }
     
-    private boolean canIOverwriteFile() {
-        
-        if (javax.swing.JOptionPane.showConfirmDialog(null, Dictionary.getString("overwrite"),
-                Dictionary.getString("question"), javax.swing.JOptionPane.YES_NO_OPTION)
-                == javax.swing.JOptionPane.YES_OPTION) {
-            return true;
-        }
-        return false;
+    private static boolean canIOverwriteFile() {
+
+        return JOptionPane.showConfirmDialog(null, Dictionary.getString("overwrite"),
+                Dictionary.getString("question"), JOptionPane.YES_NO_OPTION)
+                == JOptionPane.YES_OPTION;
     }
     
     public String getSaveFilePath(String fileExtension) {
@@ -81,8 +75,7 @@ public class DialogManager {
         }
         
         if (file_dialog.showOpenDialog(associated_ui) == javax.swing.JFileChooser.APPROVE_OPTION) {
-            String fpath = file_dialog.getSelectedFile().getPath();
-            return fpath;
+            return file_dialog.getSelectedFile().getPath();
         }
         return null;
     }
@@ -96,9 +89,8 @@ public class DialogManager {
         
         if (file_dialog.showOpenDialog(associated_ui) == javax.swing.JFileChooser.APPROVE_OPTION) {
             if (file_dialog.getFileFilter() == file_dialog.getChoosableFileFilters()[0]) {
-                
-                String fpath = file_dialog.getSelectedFile().getPath();
-                return fpath;
+
+                return file_dialog.getSelectedFile().getPath();
             }
         }
         return null;
@@ -113,7 +105,7 @@ public class DialogManager {
             String line;
             while (!(line = inf.nextLine().replace(" ", "")).startsWith("latest_version="))
                 ;
-            String ver = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
+            String ver = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
             
             if (!Constants.Version.equals(ver)) {
                 
@@ -126,11 +118,9 @@ public class DialogManager {
                     inf.reset();
                     while (!(line = inf.nextLine().replace(" ", "")).startsWith("download_link="))
                         ;
-                    String dl_url = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
+                    String dl_url = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
                     
-                    if (Desktop.isDesktopSupported() 
-                            ? Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
-                            : false) {
+                    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                         
                         Desktop.getDesktop().browse(new java.net.URI(dl_url));
                         System.exit(0);

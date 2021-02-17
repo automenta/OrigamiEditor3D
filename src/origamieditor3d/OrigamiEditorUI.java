@@ -14,6 +14,7 @@ package origamieditor3d;
 
 import java.awt.Color;
 import java.awt.Desktop;
+import java.nio.charset.StandardCharsets;
 
 import origamieditor3d.origami.Camera;
 import origamieditor3d.origami.Origami;
@@ -93,7 +94,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         // Redirect standard output to the terminal log
         java.io.OutputStream sysout = new java.io.OutputStream() {
 
-            java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+            final java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
 
             @Override
             public void write(int ch) {
@@ -115,57 +116,54 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
 
             final int ind = i;
             final javax.swing.JMenuItem baseitem = new javax.swing.JMenuItem(Dictionary.getString(basenames.get(i)));
-            baseitem.addActionListener(new java.awt.event.ActionListener() {
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
+            baseitem.addActionListener(evt -> {
 
-                    if (!saved) {
-                        if (!dialogManager1.canICloseFile()) {
-                            return;
-                        }
+                if (!saved) {
+                    if (!dialogManager1.canICloseFile()) {
+                        return;
                     }
-                    filepath = null;
-                    try (java.io.InputStream fis = bases.getFile(basenames.get(ind))) {
-
-                        java.util.ArrayList<Byte> bytesb = new java.util.ArrayList<>();
-                        int fisbyte;
-                        while ((fisbyte = fis.read()) != -1) {
-                            bytesb.add((byte) fisbyte);
-                        }
-                        byte[] bytes = new byte[bytesb.size()];
-                        for (int i = 0; i < bytesb.size(); i++) {
-                            bytes[i] = bytesb.get(i);
-                        }
-
-                        terminal1.TerminalOrigami = OrigamiIO.read_gen2(new java.io.ByteArrayInputStream(bytes), null);
-                        terminal1.historyReset();
-
-                        oPanel1.update(terminal1.TerminalOrigami);
-                        pPanel1.update(terminal1.TerminalOrigami);
-
-                        oPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
-                        oPanel1.resetZoom();
-                        pPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
-                        pPanel1.resetZoom();
-                        if (alwaysInMiddle) {
-                            oPanel1.panelCamera().adjust(terminal1.TerminalOrigami);
-                        }
-                        oPanel1.randomizeFrontColor();
-                        oPanel1.panelCamera().setOrthogonalView(0);
-                        rotation_angle = 0;
-                        defaultify();
-                        saved = true;
-                        setTitle("Origami Editor 3D");
-                    }
-                    catch (Exception ex) {
-                        javax.swing.JOptionPane.showMessageDialog(OrigamiEditorUI.this, Dictionary.getString("h005"));
-                    }
-                    foldNumber = terminal1.TerminalOrigami.history_pointer();
-                    changeListenerShutUp = true;
-                    timeSlider.setMaximum(terminal1.TerminalOrigami.history().size());
-                    changeListenerShutUp = false;
-                    timeSlider.setValue(terminal1.TerminalOrigami.history_pointer());
                 }
+                filepath = null;
+                try (java.io.InputStream fis = bases.getFile(basenames.get(ind))) {
+
+                    java.util.ArrayList<Byte> bytesb = new java.util.ArrayList<>();
+                    int fisbyte;
+                    while ((fisbyte = fis.read()) != -1) {
+                        bytesb.add((byte) fisbyte);
+                    }
+                    byte[] bytes = new byte[bytesb.size()];
+                    for (int i12 = 0; i12 < bytesb.size(); i12++) {
+                        bytes[i12] = bytesb.get(i12);
+                    }
+
+                    terminal1.TerminalOrigami = OrigamiIO.read_gen2(new java.io.ByteArrayInputStream(bytes), null);
+                    terminal1.historyReset();
+
+                    oPanel1.update(terminal1.TerminalOrigami);
+                    pPanel1.update(terminal1.TerminalOrigami);
+
+                    oPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
+                    oPanel1.resetZoom();
+                    pPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
+                    pPanel1.resetZoom();
+                    if (alwaysInMiddle) {
+                        oPanel1.panelCamera().adjust(terminal1.TerminalOrigami);
+                    }
+                    oPanel1.randomizeFrontColor();
+                    oPanel1.panelCamera().setOrthogonalView(0);
+                    rotation_angle = 0;
+                    defaultify();
+                    saved = true;
+                    setTitle("Origami Editor 3D");
+                }
+                catch (Exception ex) {
+                    javax.swing.JOptionPane.showMessageDialog(OrigamiEditorUI.this, Dictionary.getString("h005"));
+                }
+                foldNumber = terminal1.TerminalOrigami.history_pointer();
+                changeListenerShutUp = true;
+                timeSlider.setMaximum(terminal1.TerminalOrigami.history().size());
+                changeListenerShutUp = false;
+                timeSlider.setValue(terminal1.TerminalOrigami.history_pointer());
             });
             ui_file_new_bases.add(baseitem);
         }
@@ -177,61 +175,58 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         for (int i = 0; i < modnames.size(); i++) {
             final int ind = i;
             final javax.swing.JMenuItem modelitem = new javax.swing.JMenuItem(Dictionary.getString(modnames.get(i)));
-            modelitem.addActionListener(new java.awt.event.ActionListener() {
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
+            modelitem.addActionListener(evt -> {
 
-                    if (!saved) {
-                        if (!dialogManager1.canICloseFile()) {
-                            return;
-                        }
+                if (!saved) {
+                    if (!dialogManager1.canICloseFile()) {
+                        return;
                     }
-                    filepath = null;
-                    try (java.io.InputStream fis = examples.getFile(modnames.get(ind))) {
-
-                        java.util.ArrayList<Byte> bytesb = new java.util.ArrayList<>();
-                        int fisbyte;
-                        while ((fisbyte = fis.read()) != -1) {
-                            bytesb.add((byte) fisbyte);
-                        }
-                        byte[] bytes = new byte[bytesb.size()];
-                        for (int i = 0; i < bytesb.size(); i++) {
-                            bytes[i] = bytesb.get(i);
-                        }
-
-                        int papercolor = oPanel1.getFrontColor();
-                        int[] rgb = { (papercolor >>> 16) & 0xFF, (papercolor >>> 8) & 0xFF, papercolor & 0xFF };
-                        
-                        terminal1.TerminalOrigami = OrigamiIO.read_gen2(new java.io.ByteArrayInputStream(bytes), rgb);
-                        terminal1.historyReset();
-                        
-                        oPanel1.setFrontColor(rgb[0]*0x10000 + rgb[1]*0x100 + rgb[2]);
-                        
-                        oPanel1.update(terminal1.TerminalOrigami);
-                        pPanel1.update(terminal1.TerminalOrigami);
-
-                        oPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
-                        oPanel1.resetZoom();
-                        pPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
-                        pPanel1.resetZoom();
-                        if (alwaysInMiddle) {
-                            oPanel1.panelCamera().adjust(terminal1.TerminalOrigami);
-                        }
-                        oPanel1.panelCamera().setOrthogonalView(0);
-                        rotation_angle = 0;
-                        defaultify();
-                        saved = true;
-                        setTitle("Origami Editor 3D");
-                    }
-                    catch (Exception ex) {
-                        javax.swing.JOptionPane.showMessageDialog(OrigamiEditorUI.this, Dictionary.getString("h005"));
-                    }
-                    foldNumber = terminal1.TerminalOrigami.history_pointer();
-                    changeListenerShutUp = true;
-                    timeSlider.setMaximum(terminal1.TerminalOrigami.history().size());
-                    changeListenerShutUp = false;
-                    timeSlider.setValue(terminal1.TerminalOrigami.history_pointer());
                 }
+                filepath = null;
+                try (java.io.InputStream fis = examples.getFile(modnames.get(ind))) {
+
+                    java.util.ArrayList<Byte> bytesb = new java.util.ArrayList<>();
+                    int fisbyte;
+                    while ((fisbyte = fis.read()) != -1) {
+                        bytesb.add((byte) fisbyte);
+                    }
+                    byte[] bytes = new byte[bytesb.size()];
+                    for (int i1 = 0; i1 < bytesb.size(); i1++) {
+                        bytes[i1] = bytesb.get(i1);
+                    }
+
+                    int papercolor = oPanel1.getFrontColor();
+                    int[] rgb = { (papercolor >>> 16) & 0xFF, (papercolor >>> 8) & 0xFF, papercolor & 0xFF };
+
+                    terminal1.TerminalOrigami = OrigamiIO.read_gen2(new java.io.ByteArrayInputStream(bytes), rgb);
+                    terminal1.historyReset();
+
+                    oPanel1.setFrontColor(rgb[0]*0x10000 + rgb[1]*0x100 + rgb[2]);
+
+                    oPanel1.update(terminal1.TerminalOrigami);
+                    pPanel1.update(terminal1.TerminalOrigami);
+
+                    oPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
+                    oPanel1.resetZoom();
+                    pPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
+                    pPanel1.resetZoom();
+                    if (alwaysInMiddle) {
+                        oPanel1.panelCamera().adjust(terminal1.TerminalOrigami);
+                    }
+                    oPanel1.panelCamera().setOrthogonalView(0);
+                    rotation_angle = 0;
+                    defaultify();
+                    saved = true;
+                    setTitle("Origami Editor 3D");
+                }
+                catch (Exception ex) {
+                    javax.swing.JOptionPane.showMessageDialog(OrigamiEditorUI.this, Dictionary.getString("h005"));
+                }
+                foldNumber = terminal1.TerminalOrigami.history_pointer();
+                changeListenerShutUp = true;
+                timeSlider.setMaximum(terminal1.TerminalOrigami.history().size());
+                changeListenerShutUp = false;
+                timeSlider.setValue(terminal1.TerminalOrigami.history_pointer());
             });
             ui_file_example.add(modelitem);
         }
@@ -311,15 +306,12 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         for (final String locname : locnames) {
 
             final javax.swing.JMenuItem locitem = new javax.swing.JMenuItem(locname);
-            locitem.addActionListener(new java.awt.event.ActionListener() {
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    try {
-                        terminal1.execute(locales.getString(locname));
-                        relabel();
-                    }
-                    catch (Exception ex) {
-                    }
+            locitem.addActionListener(evt -> {
+                try {
+                    terminal1.execute(locales.getString(locname));
+                    relabel();
+                }
+                catch (Exception ex) {
                 }
             });
             ui_help_lang.add(locitem);
@@ -410,24 +402,25 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_panels = new javax.swing.JSplitPane();
         oPanel1 = new origamieditor3d.panel.OrigamiPanel();
         pPanel1 = new origamieditor3d.panel.PaperPanel();
-        ui_editor_notimeline = new javax.swing.JSplitPane();
+        javax.swing.JSplitPane ui_editor_notimeline = new javax.swing.JSplitPane();
         ui_toolbars = new javax.swing.JSplitPane();
-        ui_rightbar = new javax.swing.JToolBar();
+        javax.swing.JToolBar ui_rightbar = new javax.swing.JToolBar();
         ui_select = new javax.swing.JToggleButton();
         ui_plane = new javax.swing.JToggleButton();
         ui_angle = new javax.swing.JToggleButton();
-        ui_leftbar = new javax.swing.JToolBar();
+        javax.swing.JToolBar ui_leftbar = new javax.swing.JToolBar();
         ui_snap = new javax.swing.JLabel();
-        ui_snap_separator = new javax.swing.JToolBar.Separator();
+        javax.swing.JToolBar.Separator ui_snap_separator = new javax.swing.JToolBar.Separator();
         ui_snap_1 = new javax.swing.JToggleButton();
         ui_snap_2 = new javax.swing.JToggleButton();
         ui_snap_3 = new javax.swing.JToggleButton();
         ui_snap_4 = new javax.swing.JToggleButton();
-        jSplitPane2 = new javax.swing.JSplitPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        javax.swing.JSplitPane jSplitPane2 = new javax.swing.JSplitPane();
+        javax.swing.JScrollPane jScrollPane3 = new javax.swing.JScrollPane();
         terminal_log = new javax.swing.JTextArea();
         jTextField1 = new javax.swing.JTextField();
-        jMenuBar1 = new javax.swing.JMenuBar();
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        javax.swing.JMenuBar jMenuBar1 = new javax.swing.JMenuBar();
         ui_file = new javax.swing.JMenu();
         ui_file_new = new javax.swing.JMenu();
         ui_file_new_square = new javax.swing.JMenuItem();
@@ -436,7 +429,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_file_new_dollar = new javax.swing.JMenuItem();
         ui_file_new_bases = new javax.swing.JMenu();
         ui_file_example = new javax.swing.JMenu();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        javax.swing.JPopupMenu.Separator jSeparator1 = new javax.swing.JPopupMenu.Separator();
         ui_file_open = new javax.swing.JMenuItem();
         ui_file_save = new javax.swing.JMenuItem();
         ui_file_saveas = new javax.swing.JMenuItem();
@@ -448,15 +441,15 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_file_export_togif_folding = new javax.swing.JMenuItem();
         ui_file_export_toself = new javax.swing.JMenuItem();
         ui_file_export_crease = new javax.swing.JMenuItem();
-        jSeparator6 = new javax.swing.JPopupMenu.Separator();
+        javax.swing.JPopupMenu.Separator jSeparator6 = new javax.swing.JPopupMenu.Separator();
         ui_file_properties = new javax.swing.JMenuItem();
         ui_edit = new javax.swing.JMenu();
         ui_edit_undo = new javax.swing.JMenuItem();
         ui_edit_redo = new javax.swing.JMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        javax.swing.JPopupMenu.Separator jSeparator2 = new javax.swing.JPopupMenu.Separator();
         ui_edit_plane = new javax.swing.JMenuItem();
         ui_edit_angle = new javax.swing.JMenuItem();
-        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        javax.swing.JPopupMenu.Separator jSeparator3 = new javax.swing.JPopupMenu.Separator();
         ui_edit_neusis = new javax.swing.JCheckBoxMenuItem();
         ui_view = new javax.swing.JMenu();
         ui_view_paper = new javax.swing.JMenu();
@@ -466,10 +459,10 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_view_paper_none = new javax.swing.JCheckBoxMenuItem();
         ui_view_use = new javax.swing.JCheckBoxMenuItem();
         ui_view_show = new javax.swing.JCheckBoxMenuItem();
-        jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        javax.swing.JPopupMenu.Separator jSeparator5 = new javax.swing.JPopupMenu.Separator();
         ui_view_zoom = new javax.swing.JCheckBoxMenuItem();
         ui_view_best = new javax.swing.JCheckBoxMenuItem();
-        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        javax.swing.JPopupMenu.Separator jSeparator4 = new javax.swing.JPopupMenu.Separator();
         ui_help_show = new javax.swing.JCheckBoxMenuItem();
         ui_view_timeline = new javax.swing.JCheckBoxMenuItem();
         ui_view_options = new javax.swing.JMenuItem();
@@ -524,12 +517,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
                 oPanel1MouseDragged(evt);
             }
         });
-        oPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                oPanel1MouseWheelMoved(evt);
-            }
-        });
+        oPanel1.addMouseWheelListener(evt -> oPanel1MouseWheelMoved(evt));
         oPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -600,12 +588,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_select.setMaximumSize(new java.awt.Dimension(69, 33));
         ui_select.setMinimumSize(new java.awt.Dimension(69, 33));
         ui_select.setPreferredSize(new java.awt.Dimension(69, 33));
-        ui_select.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_selectActionPerformed(evt);
-            }
-        });
+        ui_select.addActionListener(evt -> ui_selectActionPerformed(evt));
         ui_rightbar.add(ui_select);
 
         ui_plane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/planethrough.png"))); // NOI18N
@@ -618,12 +601,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_plane.setMaximumSize(new java.awt.Dimension(126, 33));
         ui_plane.setMinimumSize(new java.awt.Dimension(126, 33));
         ui_plane.setPreferredSize(new java.awt.Dimension(126, 33));
-        ui_plane.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_planeActionPerformed(evt);
-            }
-        });
+        ui_plane.addActionListener(evt -> ui_planeActionPerformed(evt));
         ui_rightbar.add(ui_plane);
 
         ui_angle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/angle-bisector.png"))); // NOI18N
@@ -636,12 +614,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_angle.setMaximumSize(new java.awt.Dimension(133, 33));
         ui_angle.setMinimumSize(new java.awt.Dimension(133, 33));
         ui_angle.setPreferredSize(new java.awt.Dimension(133, 33));
-        ui_angle.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_angleActionPerformed(evt);
-            }
-        });
+        ui_angle.addActionListener(evt -> ui_angleActionPerformed(evt));
         ui_rightbar.add(ui_angle);
 
         ui_toolbars.setRightComponent(ui_rightbar);
@@ -673,12 +646,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_snap_1.setMinimumSize(new java.awt.Dimension(33, 33));
         ui_snap_1.setPreferredSize(new java.awt.Dimension(33, 33));
         ui_snap_1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        ui_snap_1.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_snap_1ActionPerformed(evt);
-            }
-        });
+        ui_snap_1.addActionListener(evt -> ui_snap_1ActionPerformed(evt));
         ui_leftbar.add(ui_snap_1);
 
         ui_snap_2.setSelected(true);
@@ -690,12 +658,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_snap_2.setMinimumSize(new java.awt.Dimension(33, 33));
         ui_snap_2.setPreferredSize(new java.awt.Dimension(33, 33));
         ui_snap_2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        ui_snap_2.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_snap_2ActionPerformed(evt);
-            }
-        });
+        ui_snap_2.addActionListener(evt -> ui_snap_2ActionPerformed(evt));
         ui_leftbar.add(ui_snap_2);
 
         ui_snap_3.setText("3");
@@ -706,12 +669,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_snap_3.setMinimumSize(new java.awt.Dimension(33, 33));
         ui_snap_3.setPreferredSize(new java.awt.Dimension(33, 33));
         ui_snap_3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        ui_snap_3.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_snap_3ActionPerformed(evt);
-            }
-        });
+        ui_snap_3.addActionListener(evt -> ui_snap_3ActionPerformed(evt));
         ui_leftbar.add(ui_snap_3);
 
         ui_snap_4.setText("4");
@@ -722,12 +680,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_snap_4.setMinimumSize(new java.awt.Dimension(33, 33));
         ui_snap_4.setPreferredSize(new java.awt.Dimension(33, 33));
         ui_snap_4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        ui_snap_4.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_snap_4ActionPerformed(evt);
-            }
-        });
+        ui_snap_4.addActionListener(evt -> ui_snap_4ActionPerformed(evt));
         ui_leftbar.add(ui_snap_4);
         
         // initialize snap fineness
@@ -770,12 +723,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         timeSlider.setMaximum(0);
         timeSlider.setValue(0);
         foldNumber = 0;
-        timeSlider.addChangeListener(new javax.swing.event.ChangeListener() {
-            @Override
-            public void stateChanged(javax.swing.event.ChangeEvent e) {
-                timeSliderStateChanged(e);
-            }
-        });
+        timeSlider.addChangeListener(e -> timeSliderStateChanged(e));
         ui_timeline.add(timeSlider, java.awt.BorderLayout.CENTER);
         changeListenerShutUp = false;
         
@@ -815,39 +763,19 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_file_new.setText("New");
 
         ui_file_new_square.setText("Square origami");
-        ui_file_new_square.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_new_squareActionPerformed(evt);
-            }
-        });
+        ui_file_new_square.addActionListener(evt -> ui_file_new_squareActionPerformed(evt));
         ui_file_new.add(ui_file_new_square);
 
         ui_file_new_a4.setText("A4 origami");
-        ui_file_new_a4.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_new_a4ActionPerformed(evt);
-            }
-        });
+        ui_file_new_a4.addActionListener(evt -> ui_file_new_a4ActionPerformed(evt));
         ui_file_new.add(ui_file_new_a4);
 
         ui_file_new_hexagonal.setText("Hexagonal origami");
-        ui_file_new_hexagonal.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_new_hexagonalActionPerformed(evt);
-            }
-        });
+        ui_file_new_hexagonal.addActionListener(evt -> ui_file_new_hexagonalActionPerformed(evt));
         ui_file_new.add(ui_file_new_hexagonal);
 
         ui_file_new_dollar.setText("Dollar bill origami");
-        ui_file_new_dollar.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_new_dollarActionPerformed(evt);
-            }
-        });
+        ui_file_new_dollar.addActionListener(evt -> ui_file_new_dollarActionPerformed(evt));
         ui_file_new.add(ui_file_new_dollar);
 
         ui_file_new_bases.setText("Bases");
@@ -863,107 +791,57 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         ui_file_open.setIcon(javax.swing.UIManager.getIcon("FileView.directoryIcon"));
         ui_file_open.setText("Open...");
-        ui_file_open.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_openActionPerformed(evt);
-            }
-        });
+        ui_file_open.addActionListener(evt -> ui_file_openActionPerformed(evt));
         ui_file.add(ui_file_open);
 
         ui_file_save.setIcon(javax.swing.UIManager.getIcon("FileView.floppyDriveIcon"));
         ui_file_save.setAccelerator(
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         ui_file_save.setText("Save");
-        ui_file_save.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_saveActionPerformed(evt);
-            }
-        });
+        ui_file_save.addActionListener(evt -> ui_file_saveActionPerformed(evt));
         ui_file.add(ui_file_save);
 
         ui_file_saveas.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
                 java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         ui_file_saveas.setText("Save As...");
-        ui_file_saveas.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_saveasActionPerformed(evt);
-            }
-        });
+        ui_file_saveas.addActionListener(evt -> ui_file_saveasActionPerformed(evt));
         ui_file.add(ui_file_saveas);
 
         ui_file_export.setText("Export");
 
         ui_file_export_topdf.setText("To PDF...");
-        ui_file_export_topdf.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_export_topdfActionPerformed(evt);
-            }
-        });
+        ui_file_export_topdf.addActionListener(evt -> ui_file_export_topdfActionPerformed(evt));
         ui_file_export.add(ui_file_export_topdf);
 
         ui_file_export_toopenctm.setText("To OpenCTM 3D File...");
-        ui_file_export_toopenctm.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_export_toopenctmActionPerformed(evt);
-            }
-        });
+        ui_file_export_toopenctm.addActionListener(evt -> ui_file_export_toopenctmActionPerformed(evt));
         ui_file_export.add(ui_file_export_toopenctm);
 
         ui_file_export_togif.setText("To GIF");
 
         ui_file_export_togif_revolving.setText("Revolving animation...");
-        ui_file_export_togif_revolving.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_export_togif_revolvingActionPerformed(evt);
-            }
-        });
+        ui_file_export_togif_revolving.addActionListener(evt -> ui_file_export_togif_revolvingActionPerformed(evt));
         ui_file_export_togif.add(ui_file_export_togif_revolving);
 
         ui_file_export_togif_folding.setText("Folding process...");
-        ui_file_export_togif_folding.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_export_togif_foldingActionPerformed(evt);
-            }
-        });
+        ui_file_export_togif_folding.addActionListener(evt -> ui_file_export_togif_foldingActionPerformed(evt));
         ui_file_export_togif.add(ui_file_export_togif_folding);
 
         ui_file_export.add(ui_file_export_togif);
 
         ui_file_export_toself.setText("To self-displaying ORI...");
-        ui_file_export_toself.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_export_toselfActionPerformed(evt);
-            }
-        });
+        ui_file_export_toself.addActionListener(evt -> ui_file_export_toselfActionPerformed(evt));
         ui_file_export.add(ui_file_export_toself);
 
         ui_file_export_crease.setText("Crease pattern to PNG...");
-        ui_file_export_crease.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_export_creaseActionPerformed(evt);
-            }
-        });
+        ui_file_export_crease.addActionListener(evt -> ui_file_export_creaseActionPerformed(evt));
         ui_file_export.add(ui_file_export_crease);
 
         ui_file.add(ui_file_export);
         ui_file.add(jSeparator6);
 
         ui_file_properties.setText("Properties");
-        ui_file_properties.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_file_propertiesActionPerformed(evt);
-            }
-        });
+        ui_file_properties.addActionListener(evt -> ui_file_propertiesActionPerformed(evt));
         ui_file.add(ui_file_properties);
 
         jMenuBar1.add(ui_file);
@@ -973,58 +851,33 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_edit_undo.setAccelerator(
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         ui_edit_undo.setText("Undo");
-        ui_edit_undo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_edit_undoActionPerformed(evt);
-            }
-        });
+        ui_edit_undo.addActionListener(evt -> ui_edit_undoActionPerformed(evt));
         ui_edit.add(ui_edit_undo);
 
         ui_edit_redo.setAccelerator(
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
         ui_edit_redo.setText("Redo");
-        ui_edit_redo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_edit_redoActionPerformed(evt);
-            }
-        });
+        ui_edit_redo.addActionListener(evt -> ui_edit_redoActionPerformed(evt));
         ui_edit.add(ui_edit_redo);
         ui_edit.add(jSeparator2);
 
         ui_edit_plane.setAccelerator(
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_3, java.awt.event.InputEvent.CTRL_MASK));
         ui_edit_plane.setText("Plane through 3 points");
-        ui_edit_plane.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_edit_planeActionPerformed(evt);
-            }
-        });
+        ui_edit_plane.addActionListener(evt -> ui_edit_planeActionPerformed(evt));
         ui_edit.add(ui_edit_plane);
 
         ui_edit_angle.setAccelerator(
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2, java.awt.event.InputEvent.CTRL_MASK));
         ui_edit_angle.setText("Angle bisector");
-        ui_edit_angle.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_edit_angleActionPerformed(evt);
-            }
-        });
+        ui_edit_angle.addActionListener(evt -> ui_edit_angleActionPerformed(evt));
         ui_edit.add(ui_edit_angle);
         ui_edit.add(jSeparator3);
 
         ui_edit_neusis.setAccelerator(
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         ui_edit_neusis.setText("Neusis Mode");
-        ui_edit_neusis.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_edit_neusisActionPerformed(evt);
-            }
-        });
+        ui_edit_neusis.addActionListener(evt -> ui_edit_neusisActionPerformed(evt));
         ui_edit.add(ui_edit_neusis);
 
         jMenuBar1.add(ui_edit);
@@ -1034,52 +887,27 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_view_paper.setText("Paper texture");
 
         ui_view_paper_image.setText("Image");
-        ui_view_paper_image.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_paper_imageActionPerformed(evt);
-            }
-        });
+        ui_view_paper_image.addActionListener(evt -> ui_view_paper_imageActionPerformed(evt));
         ui_view_paper.add(ui_view_paper_image);
 
         ui_view_paper_gradient.setSelected(true);
         ui_view_paper_gradient.setText("Gradient");
-        ui_view_paper_gradient.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_paper_gradientActionPerformed(evt);
-            }
-        });
+        ui_view_paper_gradient.addActionListener(evt -> ui_view_paper_gradientActionPerformed(evt));
         ui_view_paper.add(ui_view_paper_gradient);
 
         ui_view_paper_plain.setText("Plain");
-        ui_view_paper_plain.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_paper_plainActionPerformed(evt);
-            }
-        });
+        ui_view_paper_plain.addActionListener(evt -> ui_view_paper_plainActionPerformed(evt));
         ui_view_paper.add(ui_view_paper_plain);
 
         ui_view_paper_none.setText("None");
-        ui_view_paper_none.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_paper_noneActionPerformed(evt);
-            }
-        });
+        ui_view_paper_none.addActionListener(evt -> ui_view_paper_noneActionPerformed(evt));
         ui_view_paper.add(ui_view_paper_none);
 
         ui_view.add(ui_view_paper);
 
         ui_view_use.setSelected(true);
         ui_view_use.setText("Use anti-aliasing");
-        ui_view_use.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_useActionPerformed(evt);
-            }
-        });
+        ui_view_use.addActionListener(evt -> ui_view_useActionPerformed(evt));
         ui_view.add(ui_view_use);
         
         ui_view.add(jSeparator5);
@@ -1087,52 +915,27 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_view_show.setAccelerator(
                 javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
         ui_view_show.setText("Show preview");
-        ui_view_show.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_showActionPerformed(evt);
-            }
-        });
+        ui_view_show.addActionListener(evt -> ui_view_showActionPerformed(evt));
         ui_view.add(ui_view_show);
 
         ui_view_zoom.setSelected(true);
         ui_view_zoom.setText("Zoom on scroll");
-        ui_view_zoom.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_zoomActionPerformed(evt);
-            }
-        });
+        ui_view_zoom.addActionListener(evt -> ui_view_zoomActionPerformed(evt));
         ui_view.add(ui_view_zoom);
 
         ui_view_best.setSelected(true);
         ui_view_best.setText("Always in the middle");
-        ui_view_best.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_bestActionPerformed(evt);
-            }
-        });
+        ui_view_best.addActionListener(evt -> ui_view_bestActionPerformed(evt));
         ui_view.add(ui_view_best);
         ui_view.add(jSeparator4);
 
         ui_view_timeline.setSelected(true);
         ui_view_timeline.setText("Timeline");
-        ui_view_timeline.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_timelineActionPerformed(evt);
-            }
-        });
+        ui_view_timeline.addActionListener(evt -> ui_view_timelineActionPerformed(evt));
         ui_view.add(ui_view_timeline);
         
         ui_view_options.setText("Options");
-        ui_view_options.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_view_optionsActionPerformed(evt);
-            }
-        });
+        ui_view_options.addActionListener(evt -> ui_view_optionsActionPerformed(evt));
         ui_view.add(ui_view_options);
 
         jMenuBar1.add(ui_view);
@@ -1140,39 +943,24 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         ui_help.setText("Help");
 
         ui_help_user.setText("User Guide");
-        ui_help_user.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_help_userActionPerformed(evt);
-            }
-        });
+        ui_help_user.addActionListener(evt -> ui_help_userActionPerformed(evt));
         ui_help.add(ui_help_user);
-        
-        separator = new JSeparator();
+
+        JSeparator separator = new JSeparator();
         ui_help.add(separator);
         
         ui_help_lang.setText("Language");
         ui_help.add(ui_help_lang);
         
         ui_help_show.setText("Show tooltips");
-        ui_help_show.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_help_showActionPerformed(evt);
-            }
-        });
+        ui_help_show.addActionListener(evt -> ui_help_showActionPerformed(evt));
         ui_help.add(ui_help_show);
 
-        separator_1 = new JSeparator();
+        JSeparator separator_1 = new JSeparator();
         ui_help.add(separator_1);
         
         ui_help_about.setText("About");
-        ui_help_about.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_help_aboutActionPerformed(evt);
-            }
-        });
+        ui_help_about.addActionListener(evt -> ui_help_aboutActionPerformed(evt));
         
         ui_help.add(ui_help_about);
 
@@ -1232,12 +1020,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         final javax.swing.JCheckBox savecolor = new javax.swing.JCheckBox(Dictionary.getString("ui.view.options.save"));
         savecolor.setSelected(true);
         save_paper_color = true;
-        savecolor.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                save_paper_color = savecolor.isSelected();
-            }
-        });
+        savecolor.addActionListener(evt -> save_paper_color = savecolor.isSelected());
         c = new java.awt.GridBagConstraints();
         c.fill = java.awt.GridBagConstraints.HORIZONTAL;
         c.weightx = 0.0;
@@ -1277,26 +1060,11 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         // initialize folding options popup menu
         ui_foldingops = new javax.swing.JPopupMenu();
         final javax.swing.JMenuItem reflect = new javax.swing.JMenuItem(Dictionary.getString("ui.foldingops.reflect"));
-        reflect.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_foldingops_reflect_actionPerformed(evt);
-            }
-        });
+        reflect.addActionListener(evt -> ui_foldingops_reflect_actionPerformed(evt));
         final javax.swing.JMenuItem rotate = new javax.swing.JMenuItem(Dictionary.getString("ui.foldingops.rotate"));
-        rotate.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_foldingops_rotate_actionPerformed(evt);
-            }
-        });
+        rotate.addActionListener(evt -> ui_foldingops_rotate_actionPerformed(evt));
         final javax.swing.JMenuItem cut = new javax.swing.JMenuItem(Dictionary.getString("ui.foldingops.cut"));
-        cut.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ui_foldingops_cut_actionPerformed(evt);
-            }
-        });
+        cut.addActionListener(evt -> ui_foldingops_cut_actionPerformed(evt));
         ui_foldingops.add(reflect);
         ui_foldingops.add(rotate);
         ui_foldingops.add(cut);
@@ -1917,11 +1685,11 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
             if (evt.getX() != oPanel1.getWidth() / 2 || evt.getY() != oPanel1.getHeight() / 2) {
 
                 double r = Math
-                        .max(Math.sqrt((evt.getX() - oPanel1.getWidth() / 2) * (evt.getX() - oPanel1.getWidth() / 2)
-                                + (evt.getY() - oPanel1.getHeight() / 2) * (evt.getY() - oPanel1.getHeight() / 2)), 1);
+                        .max(Math.sqrt((evt.getX() - oPanel1.getWidth() / 2f) * (evt.getX() - oPanel1.getWidth() / 2f)
+                                + (evt.getY() - oPanel1.getHeight() / 2f) * (evt.getY() - oPanel1.getHeight() / 2f)), 1);
                 rotation_angle = evt.getX() > oPanel1.getWidth() / 2
-                        ? (int) (Math.acos((oPanel1.getHeight() / 2 - evt.getY()) / r) * 180. / Math.PI)
-                        : -(int) (Math.acos((oPanel1.getHeight() / 2 - evt.getY()) / r) * 180. / Math.PI);
+                        ? (int) (Math.acos((oPanel1.getHeight() / 2f - evt.getY()) / r) * 180.0 / Math.PI)
+                        : -(int) (Math.acos((oPanel1.getHeight() / 2f - evt.getY()) / r) * 180.0 / Math.PI);
                 oPanel1.displayProtractor(rotation_angle);
             }
         }
@@ -1936,7 +1704,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         final String fpath = dialogManager1.getSaveFilePath("pdf");
         if (fpath != null) {
 
-            if (!new java.io.File(fpath).getName().matches("[\\w\\.]+")) {
+            if (!new java.io.File(fpath).getName().matches("[\\w.]+")) {
                 javax.swing.JOptionPane.showMessageDialog(null, Dictionary.getString("noword"),
                         Dictionary.getString("warning"), javax.swing.JOptionPane.WARNING_MESSAGE);
             }
@@ -2068,7 +1836,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
             try {
                 
                 if (save_paper_color) {
-                    terminal1.execute("color " + String.valueOf(oPanel1.getFrontColor()));
+                    terminal1.execute("color " + oPanel1.getFrontColor());
                 }
                 else {
                     terminal1.execute("uncolor");
@@ -2101,7 +1869,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         
         if (fpath != null) {
             
-            if (!new java.io.File(fpath).getName().matches("[\\w\\.]+")) {
+            if (!new java.io.File(fpath).getName().matches("[\\w.]+")) {
                 javax.swing.JOptionPane.showMessageDialog(null, Dictionary.getString("noword"),
                         Dictionary.getString("warning"), javax.swing.JOptionPane.WARNING_MESSAGE);
             }
@@ -2453,22 +2221,19 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
 
         html.setEditable(false);
         html.setHighlighter(null);
-        html.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-                if (evt.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
-                    java.util.Scanner inf = new java.util.Scanner(
-                            OrigamiEditorUI.this.getClass().getResourceAsStream(evt.getDescription()), "UTF-8");
-                    String text = "";
-                    while (inf.hasNextLine()) {
-                        text += inf.nextLine() + (char) 10;
-                    }
-                    inf.close();
-                    terminal_log.setText(text);
-                    terminal_log.setCaretPosition(0);
-                    jTabbedPane1.setSelectedIndex(1);
-                    javax.swing.SwingUtilities.getWindowAncestor(html).dispose();
+        html.addHyperlinkListener(evt1 -> {
+            if (evt1.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
+                java.util.Scanner inf = new java.util.Scanner(
+                        OrigamiEditorUI.this.getClass().getResourceAsStream(evt1.getDescription()), StandardCharsets.UTF_8);
+                String text = "";
+                while (inf.hasNextLine()) {
+                    text += inf.nextLine() + (char) 10;
                 }
+                inf.close();
+                terminal_log.setText(text);
+                terminal_log.setCaretPosition(0);
+                jTabbedPane1.setSelectedIndex(1);
+                javax.swing.SwingUtilities.getWindowAncestor(html).dispose();
             }
         });
         javax.swing.JOptionPane.showMessageDialog(this, html);
@@ -2488,7 +2253,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
                 try {
                     
                     if (save_paper_color) {
-                        terminal1.execute("color " + String.valueOf(oPanel1.getFrontColor()));
+                        terminal1.execute("color " + oPanel1.getFrontColor());
                     }
                     else {
                         terminal1.execute("uncolor");
@@ -2516,7 +2281,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
             try {
                 
                 if (save_paper_color) {
-                    terminal1.execute("color " + String.valueOf(oPanel1.getFrontColor()));
+                    terminal1.execute("color " + oPanel1.getFrontColor());
                 }
                 else {
                     terminal1.execute("uncolor");
@@ -2546,18 +2311,14 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         alwaysInMiddle = ui_view_best.isSelected();
         if (alwaysInMiddle) {
             oPanel1.panelCamera().adjust(terminal1.TerminalOrigami);
-            oPanel1.rulerOff();
-            pPanel1.rulerOff();
-            oPanel1.repaint();
-            pPanel1.repaint();
         }
         else {
             oPanel1.panelCamera().unadjust(terminal1.TerminalOrigami);
-            oPanel1.rulerOff();
-            pPanel1.rulerOff();
-            oPanel1.repaint();
-            pPanel1.repaint();
         }
+        oPanel1.rulerOff();
+        pPanel1.rulerOff();
+        oPanel1.repaint();
+        pPanel1.repaint();
     }// GEN-LAST:event_ui_view_bestActionPerformed
 
     //
@@ -2765,8 +2526,8 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
             while (!(line = inf.nextLine()).startsWith("userguide_link"))
                 ;
             inf.close();
-            String url = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
-            if (Desktop.isDesktopSupported() ? Desktop.getDesktop().isSupported(Desktop.Action.BROWSE) : false) {
+            String url = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(new java.net.URI(url));
             }
             else {
@@ -2777,7 +2538,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         }
         catch (Exception ex) {
             try {
-                if (Desktop.isDesktopSupported() ? Desktop.getDesktop().isSupported(Desktop.Action.BROWSE) : false) {
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                     Desktop.getDesktop().browse(new java.net.URI(Constants.UserguideLink));
                 }
                 else {
@@ -3183,39 +2944,21 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         properties.pack();
         properties.setLocationRelativeTo(this);
 
-        final Thread difth = new Thread(new Runnable() {
+        final Thread difth = new Thread(() -> {
 
-            @Override
-            public void run() {
-
-                int dif = Origami.difficultyLevel(terminal1.TerminalOrigami.difficulty());
-                String difname = null;
-                switch (dif) {
-                    case 0:
-                        difname = Dictionary.getString("level0");
-                        break;
-                    case 1:
-                        difname = Dictionary.getString("level1");
-                        break;
-                    case 2:
-                        difname = Dictionary.getString("level2");
-                        break;
-                    case 3:
-                        difname = Dictionary.getString("level3");
-                        break;
-                    case 4:
-                        difname = Dictionary.getString("level4");
-                        break;
-                    case 5:
-                        difname = Dictionary.getString("level5");
-                        break;
-                    case 6:
-                        difname = Dictionary.getString("level6");
-                        break;
-                }
-                diflabel.setText(Dictionary.getString("level", dif, difname));
-                properties.pack();
-            }
+            int dif = Origami.difficultyLevel(terminal1.TerminalOrigami.difficulty());
+            String difname = switch (dif) {
+                case 0 -> Dictionary.getString("level0");
+                case 1 -> Dictionary.getString("level1");
+                case 2 -> Dictionary.getString("level2");
+                case 3 -> Dictionary.getString("level3");
+                case 4 -> Dictionary.getString("level4");
+                case 5 -> Dictionary.getString("level5");
+                case 6 -> Dictionary.getString("level6");
+                default -> null;
+            };
+            diflabel.setText(Dictionary.getString("level", dif, difname));
+            properties.pack();
         });
 
         properties.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -3229,12 +2972,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
 
         properties.setVisible(true);
 
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                difth.start();
-            }
-        });
+        javax.swing.SwingUtilities.invokeLater(() -> difth.start());
     }// GEN-LAST:event_ui_file_propertiesActionPerformed
 
     //
@@ -3248,7 +2986,7 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
             
             try {
                 if (save_paper_color) {
-                    terminal1.execute("color " + String.valueOf(oPanel1.getFrontColor()));
+                    terminal1.execute("color " + oPanel1.getFrontColor());
                 }
                 else {
                     terminal1.execute("uncolor");
@@ -3341,16 +3079,6 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
         return new int[] { x, y };
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JPopupMenu.Separator jSeparator3;
-    private javax.swing.JPopupMenu.Separator jSeparator4;
-    private javax.swing.JPopupMenu.Separator jSeparator5;
-    private javax.swing.JPopupMenu.Separator jSeparator6;
-    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea terminal_log;
     private javax.swing.JTextField jTextField1;
@@ -3389,18 +3117,14 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem ui_help_about;
     private javax.swing.JMenu ui_help_lang;
     private javax.swing.JCheckBoxMenuItem ui_help_show;
-    private javax.swing.JToolBar ui_leftbar;
     private javax.swing.JSplitPane ui_panels;
     private javax.swing.JToggleButton ui_plane;
-    private javax.swing.JToolBar ui_rightbar;
     private javax.swing.JToggleButton ui_select;
     private javax.swing.JToggleButton ui_snap_1;
     private javax.swing.JToggleButton ui_snap_2;
     private javax.swing.JToggleButton ui_snap_3;
     private javax.swing.JToggleButton ui_snap_4;
     private javax.swing.JLabel ui_snap;
-    private javax.swing.JToolBar.Separator ui_snap_separator;
-    private javax.swing.JSplitPane ui_editor_notimeline;
     private javax.swing.JSplitPane ui_toolbars;
     private javax.swing.JPanel ui_timeline;
     private javax.swing.JLabel ui_timeline_label;
@@ -3417,8 +3141,6 @@ public class OrigamiEditorUI extends javax.swing.JFrame {
     private javax.swing.JCheckBoxMenuItem ui_view_best;
     private javax.swing.JCheckBoxMenuItem ui_view_timeline;
     private javax.swing.JMenuItem ui_view_options;
-    private JSeparator separator;
-    private JSeparator separator_1;
     // End of variables declaration//GEN-END:variables
 
     private void defaultify() {

@@ -27,7 +27,7 @@ public class Dictionary {
     static public String getString(String key, Object... obj) {
         try {
             return String.format(messages.getString(key), obj);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             return key;
         }
     }

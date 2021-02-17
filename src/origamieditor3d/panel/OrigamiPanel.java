@@ -113,15 +113,13 @@ public class OrigamiPanel extends Panel {
         tracker_y = y;
         try {
             tracker_im = PanelOrigami.find3dImageOf(
-                    new double[]{
-                        ((double) tracker_x - refkamera.xshift
-                                + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
-                                .projection0(refkamera.camera_pos())[0]) / refkamera.zoom(),
-                        ((double) tracker_y - refkamera.yshift
-                                + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
-                                .projection0(refkamera.camera_pos())[1]) / refkamera.zoom()
-                    });
-        } catch (Exception ex) {
+                    ((double) tracker_x - refkamera.xshift
+                            + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
+                            .projection0(refkamera.camera_pos())[0]) / refkamera.zoom(),
+                    ((double) tracker_y - refkamera.yshift
+                            + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
+                            .projection0(refkamera.camera_pos())[1]) / refkamera.zoom());
+        } catch (RuntimeException ex) {
         }
         trackerOn = true;
     }
@@ -141,15 +139,13 @@ public class OrigamiPanel extends Panel {
             int x = xy[0];
             int y = xy[1];
             liner_triangle[liner_grab_index] = PanelOrigami.find3dImageOf(
-                    new double[]{
-                        ((double) x - refkamera.xshift
-                                + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
-                                .projection0(refkamera.camera_pos())[0]) / refkamera.zoom(),
-                        ((double) y - refkamera.yshift
-                                + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
-                                .projection0(refkamera.camera_pos())[1]) / refkamera.zoom()
-                    });
-        } catch (Exception ex) {
+                    ((double) x - refkamera.xshift
+                            + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
+                            .projection0(refkamera.camera_pos())[0]) / refkamera.zoom(),
+                    ((double) y - refkamera.yshift
+                            + new Camera(refkamera.xshift, refkamera.yshift, refkamera.zoom())
+                            .projection0(refkamera.camera_pos())[1]) / refkamera.zoom());
+        } catch (RuntimeException ex) {
             liner_triangle[liner_grab_index] = null;
         }
         liner_grab_index++;
@@ -238,35 +234,29 @@ public class OrigamiPanel extends Panel {
         if (ready_to_paint) {
 
             Graphics2D gx2d = (Graphics2D)g;
-            
+
             switch (displaymode) {
-
-                case UV:
-                    PanelCamera.drawTexture(g, this.getWidth(), this.getHeight());
-                    break;
-
-                case GRADIENT:
+                case UV -> PanelCamera.drawTexture(g, this.getWidth(), this.getHeight());
+                case GRADIENT -> {
                     PanelCamera.drawGradient(g, paper_front_color, PanelOrigami);
                     if (antialiasOn) {
                         gx2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     }
                     PanelCamera.drawEdges(g, new Color(0, 0, 0, .5f), PanelOrigami);
-                    break;
-
-                case PLAIN:
+                }
+                case PLAIN -> {
                     PanelCamera.drawFaces(g, paper_front_color, PanelOrigami);
                     if (antialiasOn) {
                         gx2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     }
                     PanelCamera.drawEdges(g, new Color(0, 0, 0, .5f), PanelOrigami);
-                    break;
-
-                case WIREFRAME:
+                }
+                case WIREFRAME -> {
                     if (antialiasOn) {
                         gx2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     }
                     PanelCamera.drawEdges(g, new Color(0, 0, 0, .5f), PanelOrigami);
-                    break;
+                }
             }
             
             gx2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -299,7 +289,7 @@ public class OrigamiPanel extends Panel {
                 double pont1X = ((double) ruler_x1 - this.PanelCamera.xshift) / this.PanelCamera.zoom();
                 double pont1Y = ((double) ruler_y1 - this.PanelCamera.yshift) / this.PanelCamera.zoom();
 
-                double[] vonalzoNV = new double[]{
+                double[] vonalzoNV = {
                     this.PanelCamera.axis_x()[0] * (ruler_y2 - ruler_y1)
                     + this.PanelCamera.axis_y()[0] * (ruler_x1 - ruler_x2),
                     this.PanelCamera.axis_x()[1] * (ruler_y2 - ruler_y1)
@@ -307,7 +297,7 @@ public class OrigamiPanel extends Panel {
                     this.PanelCamera.axis_x()[2] * (ruler_y2 - ruler_y1)
                     + this.PanelCamera.axis_y()[2] * (ruler_x1 - ruler_x2)
                 };
-                double[] vonalzoPT = new double[]{
+                double[] vonalzoPT = {
                     this.PanelCamera.axis_x()[0] / this.PanelCamera.zoom() * pontX
                         + this.PanelCamera.axis_y()[0] / this.PanelCamera.zoom() * pontY
                         + this.PanelCamera.camera_pos()[0],
@@ -318,7 +308,7 @@ public class OrigamiPanel extends Panel {
                         + this.PanelCamera.axis_y()[2] / this.PanelCamera.zoom() * pontY
                         + this.PanelCamera.camera_pos()[2]
                 };
-                double[] vonalzoPT1 = new double[]{
+                double[] vonalzoPT1 = {
                     this.PanelCamera.axis_x()[0] / this.PanelCamera.zoom() * pont1X
                         + this.PanelCamera.axis_y()[0] / this.PanelCamera.zoom() * pont1Y
                         + this.PanelCamera.camera_pos()[0],
@@ -401,8 +391,8 @@ public class OrigamiPanel extends Panel {
         g.drawLine(
                 (int)(width/2 + Math.cos(angle*Math.PI/180)*diam/2),
                 (int)(height/2 + Math.sin(angle*Math.PI/180)*diam/2),
-                (int)(width/2),
-                (int)(height/2)
+                width/2,
+                height/2
         );
 
         g.setColor(Color.black);
@@ -446,7 +436,7 @@ public class OrigamiPanel extends Panel {
         
         if (linerOn && rulerMode == RulerMode.Normal) {
             
-            double[] rulerNV = new double[] {
+            double[] rulerNV = {
                 PanelCamera.axis_x()[0] * (ruler_y2 - ruler_y1)
                         + PanelCamera.axis_y()[0] * (ruler_x1 - ruler_x2),
                 PanelCamera.axis_x()[1] * (ruler_y2 - ruler_y1)
@@ -479,8 +469,8 @@ public class OrigamiPanel extends Panel {
             
             double pontX = ((double) ruler_x2 - PanelCamera.xshift) / PanelCamera.zoom();
             double pontY = ((double) ruler_y2 - PanelCamera.yshift) / PanelCamera.zoom();
-            
-            double[] rulerPT = new double[] {
+
+            return new double[]{
                     PanelCamera.axis_x()[0] / PanelCamera.zoom() * pontX
                             + PanelCamera.axis_y()[0] / PanelCamera.zoom() * pontY
                             + PanelCamera.camera_pos()[0],
@@ -490,8 +480,6 @@ public class OrigamiPanel extends Panel {
                     PanelCamera.axis_x()[2] / PanelCamera.zoom() * pontX
                             + PanelCamera.axis_y()[2] / PanelCamera.zoom() * pontY
                             + PanelCamera.camera_pos()[2] };
-            
-            return rulerPT;
         }
         return null;
     }
@@ -502,8 +490,8 @@ public class OrigamiPanel extends Panel {
             
             double pont1X = ((double) ruler_x1 - PanelCamera.xshift) / PanelCamera.zoom();
             double pont1Y = ((double) ruler_y1 - PanelCamera.yshift) / PanelCamera.zoom();
-            
-            double[] rulerPT1 = new double[] {
+
+            return new double[]{
                     PanelCamera.axis_x()[0] / PanelCamera.zoom() * pont1X
                             + PanelCamera.axis_y()[0] / PanelCamera.zoom() * pont1Y
                             + PanelCamera.camera_pos()[0],
@@ -513,8 +501,6 @@ public class OrigamiPanel extends Panel {
                     PanelCamera.axis_x()[2] / PanelCamera.zoom() * pont1X
                             + PanelCamera.axis_y()[2] / PanelCamera.zoom() * pont1Y
                             + PanelCamera.camera_pos()[2] };
-            
-            return rulerPT1;
         }
         return null;
     }
